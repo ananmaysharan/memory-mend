@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Geist+Mono&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  /* Colors */
+  --color-white: #fff;
+  --color-off-white: #E9E8E3;
+  --color-surface: #F8F7F3;
+  --color-border: #e7e6e2;
+  
+  /* Fonts */
+  --font-doto: "Doto", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+  --font-cooper: "Cooper", serif;
+}
+
+@font-face {
+  font-family: Cooper;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/Cooper-Regular.woff2") format("woff2");
+}
+
+/* Base Layer - Apply to all elements by default */
+@layer base {
+  * {
+    @apply box-border m-0 p-0;
+  }
+
+  html,
+  body {
+    @apply h-full;
+  }
+
+  body {
+    @apply leading-normal text-[#333] bg-[--color-off-white];
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  /* Typography defaults */
+  h1 {
+    @apply text-[2rem] font-semibold mb-2.5 font-doto uppercase text-[#222];
+  }
+
+  h2 {
+    @apply text-2xl font-semibold mb-2.5 font-cooper text-[#333];
+  }
+
+  h3 {
+    @apply text-lg font-semibold font-cooper mb-2 text-[#444];
+  }
+
+  p {
+    @apply mb-4 text-[#666];
+    font-family: var(--font-cooper);
+  }
+
+  /* Form elements */
+  input[type="text"],
+  input[type="file"],
+  textarea {
+    @apply w-full px-2.5 py-2.5 border border-[#ddd] text-sm;
+    font-family: var(--font-cooper);
+  }
+
+  textarea {
+    @apply resize-y;
+  }
+
+  label {
+    @apply block font-medium text-sm mb-2 text-[#555];
+    font-family: var(--font-cooper);
+
+  }
+
+  /* Images */
+  img {
+    @apply max-w-full h-auto block;
+  }
+
+  /* Links */
+  a {
+    @apply text-[#0066cc] no-underline hover:underline;
+  }
+
+  /* Horizontal rules */
+  hr {
+    @apply border-0 border-t border-[#ddd] my-8;
+  }
+
+  /* Lists */
+  ul {
+    @apply list-none;
+  }
+
+  /* Pre/Code */
+  pre {
+    @apply bg-[#f5f5f5] p-4 border border-[#ddd] overflow-x-auto text-xs leading-snug;
+  }
+}
+
+/* Component Layer - Reusable component classes */
+@layer components {
+  /* Page container - uses min-height to allow natural scrolling */
+  .page {
+    @apply w-full min-h-screen flex flex-col;
+    background-color: var(--color-surface);
+  }
+
+  /* Page content - centered wrapper with max-width on desktop */
+  .page-content {
+    @apply p-5 md:max-w-3xl md:mx-auto md:w-full;
+  }
+
+  /* Button Component */
+  button {
+    @apply px-5 py-2.5 text-sm w-full bg-orange-600 border border-orange-800 shadow-[0_2px_0_0_rgba(255,255,255,0.20)_inset] rounded text-white cursor-pointer font-medium uppercase;
+    @apply hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply active:bg-orange-700;
+    font-family: var(--font-mono);
+  }
+}
