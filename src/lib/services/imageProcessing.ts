@@ -71,7 +71,7 @@ export async function detectDamage(base64Image: string, confidenceThreshold = 0.
 
 		// Re-throw with more context
 		if (error instanceof TypeError && error.message.includes('fetch')) {
-			throw new Error('Could not connect to detection API. Make sure the Python backend is running on ' + apiUrl);
+			throw new Error('Could not connect to detection API.');
 		}
 
 		throw error;

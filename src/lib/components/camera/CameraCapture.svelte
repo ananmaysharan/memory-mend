@@ -119,7 +119,7 @@
 			<img
 				src={capturedImage}
 				alt="Captured"
-				class="flex-1 w-full h-auto object-contain mb-4 md:max-h-[600px]"
+				class="flex-1 p-4 rounded w-full h-auto object-contain mb-4 md:max-h-[600px]"
 			/>
 			<div class="flex flex-col gap-2.5 p-4 bg-[--color-surface]">
 				<Button onclick={confirmPhoto}>Use Photo</Button>
@@ -133,7 +133,7 @@
 				autoplay
 				playsinline
 				muted
-				class="flex-1 w-full h-auto object-cover rounded bg-black md:object-contain md:max-h-[500px]"
+				class="flex-1 w-full object-cover rounded bg-surface"
 			></video>
 			<canvas bind:this={canvasElement} class="hidden"></canvas>
 

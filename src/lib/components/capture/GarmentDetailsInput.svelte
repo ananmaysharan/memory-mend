@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Combobox from '$lib/components/ui/Combobox.svelte';
+	import Select from '$lib/components/ui/Select.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 
 	interface Props {
@@ -19,9 +19,7 @@
 		{ value: 'sweater', label: 'Sweater' },
 		{ value: 'jeans', label: 'Jeans' },
 		{ value: 'socks', label: 'Socks' },
-		{ value: 'hat', label: 'Hat' },
 		{ value: 'scarf', label: 'Scarf' },
-		{ value: 'gloves', label: 'Gloves' },
 		{ value: 'other', label: 'Other' }
 	];
 
@@ -29,12 +27,12 @@
 		{ value: 'cotton', label: 'Cotton' },
 		{ value: 'denim', label: 'Denim' },
 		{ value: 'wool', label: 'Wool' },
+		{ value: 'jersey', label: 'Jersey' },
 		{ value: 'polyester', label: 'Polyester' },
 		{ value: 'silk', label: 'Silk' },
 		{ value: 'linen', label: 'Linen' },
 		{ value: 'fleece', label: 'Fleece' },
-		{ value: 'leather', label: 'Leather' },
-		{ value: 'other', label: 'Other' }
+		{ value: 'other', label: 'Not Sure' }
 	];
 
 	const isValid = $derived(garmentType !== '' && material !== '');
@@ -56,14 +54,14 @@
 	<div class="flex-1 flex flex-col justify-center max-w-md mx-auto w-full gap-6">
 		<h2 class="text-2xl mb-4">Garment Details</h2>
 
-		<Combobox
+		<Select
 			bind:value={garmentType}
 			options={garmentOptions}
 			label="Type of Clothing"
 			placeholder="Select garment type"
 		/>
 
-		<Combobox
+		<Select
 			bind:value={material}
 			options={materialOptions}
 			label="Material"
