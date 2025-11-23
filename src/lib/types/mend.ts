@@ -7,8 +7,9 @@
  */
 export interface Memory {
 	id: string; // Hash of the memory content
+	title?: string; // Memory title
 	text?: string; // Text memory
-	image?: string; // Base64 encoded image memory
+	images?: string[]; // Array of base64 encoded images (max 6)
 	timestamp: number;
 }
 

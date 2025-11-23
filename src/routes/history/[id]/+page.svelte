@@ -68,11 +68,18 @@
 			<div class="flex flex-col gap-5">
 				<div>
 				<h2>Memory</h2>
+					{#if mend.memory.title}
+						<h3>{mend.memory.title}</h3>
+					{/if}
 					{#if mend.memory.text}
 						<p class="mb-0 italic">"{mend.memory.text}"</p>
 					{/if}
-					{#if mend.memory.image}
-						<img src={mend.memory.image} alt="Memory" width="200" class="mb-2.5" />
+					{#if mend.memory.images && mend.memory.images.length > 0}
+						<div class="flex flex-wrap gap-2.5 mt-2.5">
+							{#each mend.memory.images as image}
+								<img src={image} alt="Memory" width="200" class="mb-2.5" />
+							{/each}
+						</div>
 					{/if}
 				</div>
 				<div>

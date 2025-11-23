@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Select from '$lib/components/ui/Select.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import Camera from "phosphor-svelte/lib/Camera";
+	import UploadSimple from "phosphor-svelte/lib/UploadSimple";
 
 	interface Props {
 		garmentType: string;
@@ -70,13 +72,13 @@
 
 		<div class="flex flex-col gap-2.5 mt-6">
 			<Button onclick={handleCaptureImage} disabled={!isValid}>
-				Capture Image
+				<Camera size={18} weight="bold" /> Capture Image
 			</Button>
 
 			<p class="mx-auto italic text-center text-sm">or...</p>
 
 			<Button onclick={handleUploadImage} disabled={!isValid}>
-				Upload Image
+				<UploadSimple size={18} weight="bold" /> Upload Image
 			</Button>
 		</div>
 	</div>

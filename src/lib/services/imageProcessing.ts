@@ -4,15 +4,15 @@
  */
 
 import type { Detection } from '$lib/types/mend';
-import { resizeImage, compressImage } from '$lib/utils/imageUtils';
+import { resize43Image, compressImage } from '$lib/utils/imageUtils';
 
 /**
  * Preprocess an image for analysis
- * Currently just resizes and compresses
+ * Resizes to 3:4 aspect ratio (1200x1600) and compresses
  */
 export async function preprocessImage(base64Image: string): Promise<string> {
-	// Resize to reasonable dimensions
-	const resized = await resizeImage(base64Image, 1920, 1080);
+	// Resize to 3:4 aspect ratio at 1200x1600
+	const resized = await resize43Image(base64Image, 1200);
 
 	// Compress to reduce file size
 	const compressed = await compressImage(resized, 0.85);

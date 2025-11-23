@@ -7,6 +7,10 @@
   --color-off-white: #E9E8E3;
   --color-surface: #F8F7F3;
   --color-border: #e7e6e2;
+  --color-green: #C8D665;
+  --color-pink: #c86587;
+  --color-blue: #ADD7F7;
+  --color-yellow: #FAC22B;
   
   /* Fonts */
   --font-doto: "Doto", sans-serif;
@@ -114,7 +118,7 @@
 
   /* Button Component */
   button {
-    @apply px-5 py-2.5 text-sm w-full bg-orange-600 border border-orange-800 shadow-[0_2px_0_0_rgba(255,255,255,0.20)_inset] rounded text-white cursor-pointer font-medium uppercase;
+    @apply flex flex-row items-center justify-center gap-2 px-5 align-middle py-2.5 text-sm w-full bg-orange-600 border border-orange-800 shadow-[0_2px_0_0_rgba(255,255,255,0.20)_inset] rounded text-white cursor-pointer font-medium uppercase;
     @apply hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed;
     @apply active:bg-orange-700;
     font-family: var(--font-mono);

@@ -10,7 +10,7 @@ torch==2.9.1
 torchvision==0.24.1
 
 # Image processing
-opencv-python==4.10.0.84
+opencv-python-headless==4.10.0.84
 pillow==11.0.0
 numpy==1.26.4
 

@@ -29,19 +29,25 @@ function simpleHash(message: string): number {
 }
 
 /**
- * Hash a memory (text or image) into a unique short ID
+ * Hash a memory (title, text, or images) into a unique short ID
  * Returns a base36 string (0-9, A-Z) of length ID_LENGTH
  */
-export async function hashMemory(memory: { text?: string; image?: string }): Promise<string> {
+export async function hashMemory(memory: { title?: string; text?: string; images?: string[] }): Promise<string> {
 	let hashInput = '';
 
-	if (memory.text) {
-		hashInput = memory.text;
+	if (memory.title) {
+		hashInput = memory.title;
 	}
 
-	if (memory.image) {
-		// For images, use a substring of the base64 data
-		hashInput += memory.image.substring(0, 1000);
+	if (memory.text) {
+		hashInput += memory.text;
+	}
+
+	if (memory.images && memory.images.length > 0) {
+		// For images, use a substring of each base64 data
+		memory.images.forEach(image => {
+			hashInput += image.substring(0, 500);
+		});
 	}
 
 	if (!hashInput) {

@@ -32,7 +32,12 @@ class HistoryStore {
 
 		// Save migrated mends back to storage
 		for (const mend of migratedMends) {
-			saveMend(mend);
+			try {
+				saveMend(mend);
+			} catch (error) {
+				// Log but continue with other mends
+				console.error('Failed to save migrated mend:', mend.id, error);
+			}
 		}
 
 		this.mends = migratedMends;
@@ -41,6 +46,7 @@ class HistoryStore {
 
 	/**
 	 * Add a new mend to history
+	 * @throws {Error} If save fails (e.g., quota exceeded)
 	 */
 	addMend(mend: Partial<Mend>): Mend {
 		const now = Date.now();
@@ -61,10 +67,15 @@ class HistoryStore {
 			status: mend.status || 'draft'
 		};
 
-		saveMend(completeMend);
-		this.loadFromStorage();
-
-		return completeMend;
+		try {
+			saveMend(completeMend);
+			this.loadFromStorage();
+			return completeMend;
+		} catch (error) {
+			// Re-throw the error so the caller can handle it
+			console.error('Failed to add mend to history:', error);
+			throw error;
+		}
 	}
 
 	/**

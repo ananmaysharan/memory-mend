@@ -8,6 +8,9 @@
 	import type { Detection } from "$lib/types/mend";
 	import BackButton from "../navigation/BackButton.svelte";
 	import Button from "../ui/Button.svelte";
+	import Plus from "phosphor-svelte/lib/Plus";
+	import Trash from "phosphor-svelte/lib/Trash";
+
 
 	interface Props {
 		/** Base64 image to display */
@@ -172,21 +175,22 @@
 
 <svelte:window onmousemove={handleMouseMove} onmouseup={stopDrag} />
 
-<div class="flex h-full flex-col gap-4">
+<div class="flex h-full flex-col">
 
-
-	<!-- Image container with bounding box overlay -->
-	<div
-		bind:this={containerElement}
-		class="relative flex-1 overflow-hidden rounded-lg bg-surface border border-gray-300"
-		style="cursor: {draggingVertex ? 'grabbing' : 'default'};"
-	>
+	<!-- Image container wrapper with consistent padding -->
+	<div class="flex-1 flex items-center justify-center p-4">
+		<!-- Image container with bounding box overlay -->
+		<div
+			bind:this={containerElement}
+			class="relative w-full max-w-md overflow-hidden rounded bg-surface"
+			style="aspect-ratio: 3/4; cursor: {draggingVertex ? 'grabbing' : 'default'};"
+		>
 		<!-- Image -->
 		<img
 			bind:this={imageElement}
 			src={image}
 			alt="Captured fabric"
-			class="absolute inset-0 m-auto max-w-full max-h-full pointer-events-none select-none object-contain user-select-none -webkit-user-drag-none"
+			class="w-full h-full object-cover pointer-events-none select-none user-select-none -webkit-user-drag-none"
 			onload={handleImageLoad}
 			draggable="false"
 		/>
@@ -205,7 +209,7 @@
 					width={box.width * scale}
 					height={box.height * scale}
 					fill="none"
-					stroke="rgb(59, 130, 246)"
+					stroke="var(--color-blue)"
 					stroke-width="3"
 					stroke-dasharray="10 5"
 					class="animate-pulse"
@@ -221,12 +225,12 @@
 						cy={pos.y}
 						r="10"
 						fill="white"
-						stroke="rgb(59, 130, 246)"
+						stroke="var(--color-blue)"
 						stroke-width="2"
-						class="pointer-events-auto cursor-grab active:cursor-grabbing drop-shadow-md"
+						class="pointer-events-auto cursor-grab active:cursor-grabbing"
 						style="cursor: {draggingVertex === vertex
 							? 'grabbing'
-							: 'grab'}; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"
+							: 'grab'};"
 						onmousedown={() =>
 							startDrag(vertex as "tl" | "tr" | "bl" | "br")}
 					/>
@@ -238,12 +242,35 @@
 				{confidence < 1 ? `${Math.round(confidence * 100)}% confidence` : 'Manual selection'}
 			</div> -->
 		{/if}
+
+		<!-- Overlay action buttons (top right) -->
+		{#if box}
+			<!-- Remove box button -->
+			<button
+				onclick={removeBox}
+				class="absolute right-4 top-4 max-w-fit flex items-center gap-2 rounded bg-red-500 px-3 py-2 text-sm font-medium text-white hover:bg-red-600 transition-colors"
+			>
+				<Trash size={18} weight="bold" />
+				Remove
+			</button>
+		{:else}
+			<!-- Add manual box button -->
+			<button
+				onclick={addManualBox}
+				disabled={imageWidth === 0}
+				class="absolute right-4 top-4 max-w-fit flex items-center gap-2 border-orange-800 rounded bg-orange-600 px-3 py-2 text-sm font-medium text-white hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+			>
+				<Plus size={18} weight="bold" />
+				Add
+			</button>
+		{/if}
+		</div>
 	</div>
 
 	<!-- Controls -->
-	 	<div class="flex flex-col">
+	 	<div class="flex flex-col p-4">
 		<!-- Instructions -->
-		<p class="flex-1 text-sm text-gray-600 self-center">
+		<p class="mb-0 text-sm text-gray-600 self-center">
 			{#if box}
 				Drag the corner circles to adjust the detection area.
 			{:else}
@@ -253,12 +280,12 @@
 
 		{#if box}
 			<!-- Remove box button -->
-			<Button onclick={removeBox}>Remove Box</Button>
+			<!-- <Button onclick={removeBox}>Remove Box</Button> -->
 		{:else}
 			<!-- Add manual box button -->
-			<Button onclick={addManualBox} disabled={imageWidth === 0}>
+			<!-- <Button onclick={addManualBox} disabled={imageWidth === 0}>
 				Add Detection Box
-			</Button>
+			</Button> -->
 		{/if}
 	</div>
 </div>

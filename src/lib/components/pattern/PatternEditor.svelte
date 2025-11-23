@@ -4,27 +4,36 @@
 
 	interface Props {
 		pattern: PatternData;
+		large?: boolean;
 	}
 
-	let { pattern }: Props = $props();
+	let { pattern, large = false }: Props = $props();
 
-	const cellSize = $derived(pattern.config.cellSize);
+	// Calculate cell size based on display mode
+	const baseCellSize = $derived(large ? 28 : pattern.config.cellSize);
+	const cellSize = $derived(baseCellSize);
 	const gridSize = $derived(pattern.config.gridSize);
 </script>
 
-<div>
+<div class="pattern-container">
 	<!-- Pattern Info -->
-	<div>
-		<p><strong>Pattern ID:</strong> {pattern.id}</p>
+	<div class="mb-4 text-center">
+		<p class="font-mono text-sm text-gray-600 m-0">
+			<strong>Pattern ID:</strong>
+			{pattern.id}
+		</p>
 	</div>
 
 	<!-- Pattern Grid -->
-	<div>
+	<div class="pattern-grid">
 		{#each pattern.grid as row, rowIndex}
-			<div style="display: flex;">
+			<div class="flex">
 				{#each row as cell, colIndex}
 					{@const cornerType = getCornerMarker(rowIndex, colIndex, gridSize)}
-					<div class="cell" style="width: {cellSize}px; height: {cellSize}px; position: relative;">
+					<div
+						class="cell"
+						style="width: {cellSize}px; height: {cellSize}px; position: relative;"
+					>
 						{#if cornerType === 'TL'}
 							<!-- Top-left: X pattern -->
 							<svg width={cellSize} height={cellSize} xmlns="http://www.w3.org/2000/svg">
@@ -71,7 +80,7 @@
 								<circle
 									cx={cellSize / 2}
 									cy={cellSize / 2}
-									r={(cellSize - (cellSize * 0.1)) / 2}
+									r={(cellSize - cellSize * 0.1) / 2}
 									fill="none"
 									stroke="#000"
 									stroke-width={cellSize * 0.1}
@@ -111,8 +120,30 @@
 </div>
 
 <style>
+	.pattern-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+	}
+
+	.pattern-grid {
+		display: inline-flex;
+		flex-direction: column;
+		border: 2px solid #333;
+		background: white;
+	}
+
 	.cell {
 		border: 1px solid #ddd;
 		box-sizing: border-box;
+	}
+
+	/* Responsive sizing for smaller screens */
+	@media (max-width: 640px) {
+		.pattern-grid {
+			transform: scale(0.75);
+			transform-origin: top center;
+		}
 	}
 </style>

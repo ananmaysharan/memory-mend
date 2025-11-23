@@ -2,6 +2,9 @@
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { blobToBase64 } from '$lib/utils/imageUtils';
+	import ArrowRight from "phosphor-svelte/lib/ArrowRight";
+	import ArrowClockwise from "phosphor-svelte/lib/ArrowClockwise";
+
 
 	interface Props {
 		onCapture: (imageData: string) => void;
@@ -22,7 +25,8 @@
 			// Use back camera on mobile (environment), fallback to any camera
 			const mediaStream = await navigator.mediaDevices.getUserMedia({
 				video: {
-					facingMode: 'environment' // Back camera on mobile
+					facingMode: 'environment', // Back camera on mobile
+					aspectRatio: 3/4 // Request 3:4 aspect ratio (vertical)
 				},
 				audio: false
 			});
@@ -54,9 +58,43 @@
 		const context = canvasElement.getContext('2d');
 		if (!context) return;
 
-		canvasElement.width = videoElement.videoWidth;
-		canvasElement.height = videoElement.videoHeight;
-		context.drawImage(videoElement, 0, 0);
+		const sourceWidth = videoElement.videoWidth;
+		const sourceHeight = videoElement.videoHeight;
+		const targetRatio = 3 / 4;
+
+		// Calculate dimensions to maintain 3:4 aspect ratio (vertical)
+		let captureWidth = sourceWidth;
+		let captureHeight = sourceHeight;
+		let offsetX = 0;
+		let offsetY = 0;
+
+		const sourceRatio = sourceWidth / sourceHeight;
+
+		if (sourceRatio > targetRatio) {
+			// Source is wider - crop width (center crop)
+			captureWidth = sourceHeight * targetRatio;
+			offsetX = (sourceWidth - captureWidth) / 2;
+		} else if (sourceRatio < targetRatio) {
+			// Source is taller - crop height (center crop)
+			captureHeight = sourceWidth / targetRatio;
+			offsetY = (sourceHeight - captureHeight) / 2;
+		}
+
+		canvasElement.width = captureWidth;
+		canvasElement.height = captureHeight;
+
+		// Draw the cropped portion centered
+		context.drawImage(
+			videoElement,
+			offsetX,
+			offsetY,
+			captureWidth,
+			captureHeight,
+			0,
+			0,
+			captureWidth,
+			captureHeight
+		);
 
 		const imageData = canvasElement.toDataURL('image/jpeg', 0.9);
 		capturedImage = imageData;
@@ -116,29 +154,38 @@
 		</div>
 	{:else if capturedImage}
 		<div class="flex flex-col h-full w-full">
-			<img
-				src={capturedImage}
-				alt="Captured"
-				class="flex-1 p-4 rounded w-full h-auto object-contain mb-4 md:max-h-[600px]"
-			/>
-			<div class="flex flex-col gap-2.5 p-4 bg-[--color-surface]">
-				<Button onclick={confirmPhoto}>Use Photo</Button>
-				<Button onclick={retake}>Retake</Button>
+			<div class="flex-1 flex items-center justify-center p-4">
+				<div class="w-full max-w-md" style="aspect-ratio: 3/4;">
+					<img
+						src={capturedImage}
+						alt="Captured"
+						class="w-full h-full object-cover rounded"
+					/>
+				</div>
+			</div>
+			<div class="flex flex-row gap-2.5 p-4 bg-[--color-surface]">
+				<Button onclick={retake}><ArrowClockwise size={18} weight="bold" />Retake</Button>
+				<Button onclick={confirmPhoto}>Use Photo<ArrowRight size={18} weight="bold" /></Button>
+
 			</div>
 		</div>
 	{:else}
-		<div class="flex flex-col h-full w-full p-4">
-			<video
-				bind:this={videoElement}
-				autoplay
-				playsinline
-				muted
-				class="flex-1 w-full object-cover rounded bg-surface"
-			></video>
+		<div class="flex flex-col h-full w-full">
+			<div class="relative w-full flex-1 flex items-center justify-center p-4">
+				<div class="relative w-full max-w-md" style="aspect-ratio: 3/4;">
+					<video
+						bind:this={videoElement}
+						autoplay
+						playsinline
+						muted
+						class="absolute inset-0 w-full h-full object-cover rounded bg-surface"
+					></video>
+				</div>
+			</div>
 			<canvas bind:this={canvasElement} class="hidden"></canvas>
 
 			{#if isStreaming}
-				<div class="flex flex-col gap-2.5 py-4 bg-[--color-surface]">
+				<div class="flex flex-col gap-2.5 p-4 bg-[--color-surface]">
 					<Button onclick={capturePhoto}>Capture</Button>
 				</div>
 			{/if}

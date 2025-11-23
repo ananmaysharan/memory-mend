@@ -14,7 +14,7 @@
 <div class="page">
 	<TopBar title="Mend Library" showBackButton={true} backDestination="/" />
 	<div class="page-content">
-		<p>All your memory mends in one place</p>
+		<p>All your memory mends in one place.</p>
 
 		{#if mends.length === 0}
 			<div class="mt-5">
@@ -49,9 +49,5 @@
 				{/each}
 			</div>
 		{/if}
-
-		<hr />
-
-		<Button onclick={() => goto('/')}>Back to Home</Button>
 	</div>
 </div>

@@ -20,7 +20,11 @@ const DEFAULT_CELL_SIZE = 20; // 20px per cell for display
  */
 export async function generatePatternFromMemory(memory: Memory): Promise<PatternData> {
 	// Get the short ID for the memory (e.g., "A1B2C3")
-	const id = await hashMemory({ text: memory.text, image: memory.image });
+	const id = await hashMemory({
+		title: memory.title,
+		text: memory.text,
+		images: memory.images
+	});
 
 	// Convert ID to binary (each character becomes 8 bits)
 	const binary = idToBinary(id);

@@ -4,6 +4,11 @@
 	import TopBar from '$lib/components/navigation/TopBar.svelte';
 	import { mendStore } from '$lib/stores/mendStore.svelte';
 	import { historyStore } from '$lib/stores/historyStore.svelte';
+	import Scan from "phosphor-svelte/lib/Scan";
+	import PlusCircle from "phosphor-svelte/lib/PlusCircle";
+	import BookOpen from "phosphor-svelte/lib/BookOpen";
+
+
 
 	const mends = $derived(historyStore.getSortedMends());
 
@@ -21,8 +26,8 @@
 	<TopBar title="Memory Mend" />
 	<div class="page-content">
 		<div class="mt-5 flex gap-3 md:flex-row flex-col">
-			<Button onclick={startNewMend}>Start New Mend</Button>
-			<Button>Scan Mend</Button>
+			<Button onclick={startNewMend}><PlusCircle size={18} weight="bold" />Start New Mend</Button>
+			<Button><Scan size={18} weight="bold" />Scan Mend</Button>
 		</div>
 
 		<h2 class='my-5'> Your Memory Mends </h2>
@@ -63,7 +68,7 @@
 
 			{#if mends.length > 9}
 				<div class="mt-5">
-					<Button onclick={() => goto('/history')}>View Full Mend Library</Button>
+					<Button onclick={() => goto('/history')}><BookOpen size={18} weight="bold" />View Full Mend Library</Button>
 				</div>
 			{/if}
 		{/if}

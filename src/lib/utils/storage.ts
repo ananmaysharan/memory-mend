@@ -41,11 +41,12 @@ export function getAllMends(): Mend[] {
 
 /**
  * Save a mend to storage
+ * @throws {Error} If localStorage is not available
+ * @throws {DOMException} If quota is exceeded (QuotaExceededError)
  */
 export function saveMend(mend: Mend): void {
 	if (!isLocalStorageAvailable()) {
-		console.warn('localStorage not available');
-		return;
+		throw new Error('localStorage is not available');
 	}
 
 	try {
@@ -63,6 +64,14 @@ export function saveMend(mend: Mend): void {
 		localStorage.setItem(STORAGE_KEYS.MENDS, JSON.stringify(mends));
 	} catch (error) {
 		console.error('Error saving mend to storage:', error);
+
+		// Check if it's a quota exceeded error
+		if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+			throw new Error('Storage quota exceeded. Try reducing the number or size of images.');
+		}
+
+		// Re-throw other errors
+		throw error;
 	}
 }
 

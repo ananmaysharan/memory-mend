@@ -18,13 +18,32 @@
 	}
 
 	function handleSaveAndFinish() {
-		const mend = mendStore.getMend();
-		historyStore.addMend({
-			...mend,
-			status: 'ready'
-		});
-		mendStore.reset();
-		goto('/');
+		try {
+			const mend = mendStore.getMend();
+			historyStore.addMend({
+				...mend,
+				status: 'ready'
+			});
+			mendStore.reset();
+			goto('/');
+		} catch (error) {
+			console.error('Failed to save mend:', error);
+
+			// Show user-friendly error message
+			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+			if (errorMessage.includes('quota') || errorMessage.includes('storage')) {
+				alert(
+					'Failed to save: Storage is full.\n\n' +
+					'Your memory has too many or too large images. Try:\n' +
+					'• Going back and removing some images\n' +
+					'• Using fewer images\n\n' +
+					'Note: Your progress has not been lost - you can go back and modify your memory.'
+				);
+			} else {
+				alert(`Failed to save mend: ${errorMessage}`);
+			}
+		}
 	}
 
 	function goBack() {
