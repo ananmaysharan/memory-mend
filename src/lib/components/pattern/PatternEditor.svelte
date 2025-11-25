@@ -88,7 +88,7 @@
 							</svg>
 						{:else if cornerType === 'BR'}
 							<!-- Bottom-right: solid square -->
-							<div style="width: 100%; height: 100%; background-color: #000;"></div>
+							<div style="width: 100%; height: 100%; border: 2px solid #000;"></div>
 						{:else if cell}
 							<!-- Data cell with stitch (X mark) -->
 							<svg width={cellSize} height={cellSize} xmlns="http://www.w3.org/2000/svg">
@@ -127,15 +127,15 @@
 		width: 100%;
 	}
 
-	.pattern-grid {
+	/* .pattern-grid {
 		display: inline-flex;
 		flex-direction: column;
-		border: 2px solid #333;
+		border: 0px solid #333;
 		background: white;
-	}
+	} */
 
 	.cell {
-		border: 1px solid #ddd;
+		border: 1px solid #fff;
 		box-sizing: border-box;
 	}
 

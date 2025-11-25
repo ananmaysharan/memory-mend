@@ -11,6 +11,16 @@
 	const mend = $derived(historyStore.getMendById(mendId));
 	const from = $derived($page.url.searchParams.get('from'));
 
+	const memoryDate = $derived(
+		mend?.memory.timestamp
+			? new Date(mend.memory.timestamp).toLocaleDateString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+			  })
+			: ''
+	);
+
 	onMount(() => {
 		if (!mend) {
 			goto('/');
@@ -31,80 +41,63 @@
 			goto('/');
 		}
 	}
-
-	function formatDate(timestamp: number): string {
-		return new Date(timestamp).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
 </script>
 
 {#if mend}
 	<div class="page">
 		<TopBar title="Mend Details" showBackButton={true} backHandler={handleBack} />
 		<div class="page-content">
-			<p>
-				Created {formatDate(mend.createdAt)}
-				{#if mend.updatedAt !== mend.createdAt}
-					• Updated {formatDate(mend.updatedAt)}
+			<!-- Header section with title, date, and garment info -->
+			<div class="mb-6">
+				<h1 class="text-3xl md:text-4xl mb-1 font-cooper capitalize">
+					{mend.memory.title || 'Your Memory'}
+				</h1>
+				<p class="text-xl text-gray-600 font-cooper">{memoryDate}</p>
+				{#if mend.garmentType || mend.material}
+					<p class="text-lg text-gray-500 mt-2 font-mono uppercase">
+						{#if mend.material && mend.garmentType}
+							{mend.material} {mend.garmentType}
+						{:else if mend.garmentType}
+							{mend.garmentType}
+						{:else if mend.material}
+							{mend.material}
+						{/if}
+					</p>
 				{/if}
-			</p>
-			{#if mend.garmentType || mend.material}
-				<p class="text-sm text-gray-600 capitalize">
-					{#if mend.material && mend.garmentType}
-						{mend.material} {mend.garmentType}
-					{:else if mend.garmentType}
-						{mend.garmentType}
-					{:else if mend.material}
-						{mend.material}
-					{/if}
-				</p>
+			</div>
+
+			<!-- Memory Text -->
+			{#if mend.memory.text}
+				<div class="bg-white border border-border rounded-lg p-4 mb-6">
+					<p class="font-cooper text-base m-0 italic">"{mend.memory.text}"</p>
+				</div>
 			{/if}
-			
-			<div class="flex flex-col gap-5">
-				<div>
-				<h2>Memory</h2>
-					{#if mend.memory.title}
-						<h3>{mend.memory.title}</h3>
-					{/if}
-					{#if mend.memory.text}
-						<p class="mb-0 italic">"{mend.memory.text}"</p>
-					{/if}
-					{#if mend.memory.images && mend.memory.images.length > 0}
-						<div class="flex flex-wrap gap-2.5 mt-2.5">
-							{#each mend.memory.images as image}
-								<img src={image} alt="Memory" width="200" class="mb-2.5" />
-							{/each}
+
+			<!-- Memory Images -->
+			{#if mend.memory.images && mend.memory.images.length > 0}
+				<div class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-6">
+					{#each mend.memory.images as image}
+						<div class="relative bg-white p-2 md:p-3 shadow-sm aspect-square">
+							<img src={image} alt="Memory" class="w-full h-full object-cover" />
 						</div>
-					{/if}
+					{/each}
 				</div>
-				<div>
-					<h2>Stitch Pattern</h2>
-					<PatternEditor pattern={mend.pattern} />
-				</div>
-				<div>
-					<h2>Repair Area</h2>
-					<img src={mend.image} alt="Repair area" />
-				</div>
+			{/if}
 
-				<div>
-					<!-- <div class="mb-5">
-						<p><strong>Memory ID:</strong></p>
-						<p style="font-family: monospace; font-size: 12px; word-break: break-all;">{mend.memory.id}</p>
-					</div> -->
+			<!-- Stitch Pattern -->
+			<div class="bg-white border border-border rounded-lg p-6 mb-6">
+				<PatternEditor pattern={mend.pattern} large={true} />
+			</div>
 
-					<!-- <h2>Status</h2>
-					<p class="mb-5" style="text-transform: capitalize;">{mend.status}</p> -->
+			<!-- Repair Area -->
+			<div class="mb-6">
+				<h2 class="text-2xl font-semibold mb-4 font-cooper">Repair Area</h2>
+				<img src={mend.image} alt="Repair area" class="w-full rounded-lg" />
+			</div>
 
-					<div class="flex flex-col gap-2.5">
-						<Button onclick={handleDelete}>Delete Mend</Button>
-						<Button onclick={handleBack}>Back</Button>
-					</div>
-				</div>
+			<!-- Delete Button -->
+			<div class="flex flex-col gap-2.5">
+				<Button onclick={handleDelete}>Delete Mend</Button>
 			</div>
 		</div>
 	</div>
@@ -113,7 +106,6 @@
 		<TopBar title="Mend Details" showBackButton={true} backHandler={handleBack} />
 		<div class="page-content">
 			<p>Mend not found.</p>
-			<Button onclick={handleBack}>Back</Button>
 		</div>
 	</div>
 {/if}

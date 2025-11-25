@@ -7,6 +7,16 @@
 	import { mendStore } from '$lib/stores/mendStore.svelte';
 	import { historyStore } from '$lib/stores/historyStore.svelte';
 
+	const memoryDate = $derived(
+		mendStore.memory?.timestamp
+			? new Date(mendStore.memory.timestamp).toLocaleDateString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+			  })
+			: ''
+	);
+
 	onMount(() => {
 		if (!mendStore.pattern) {
 			goto('/capture');
@@ -54,35 +64,36 @@
 <div class="page">
 	<TopBar title="Preview & Send" showBackButton={true} backDestination="/pattern" />
 	<div class="page-content">
-		<p>Review your pattern before sending to the embroidery machine</p>
-
-		{#if mendStore.garmentType || mendStore.material}
-			<p class="text-sm text-gray-600 capitalize">
-				{#if mendStore.material && mendStore.garmentType}
-					{mendStore.material} {mendStore.garmentType}
-				{:else if mendStore.garmentType}
-					{mendStore.garmentType}
-				{:else if mendStore.material}
-					{mendStore.material}
-				{/if}
-			</p>
-		{/if}
-
-		<hr />
-
-		<div>
-			<h2>Final Pattern</h2>
-			{#if mendStore.pattern}
-				<PatternEditor pattern={mendStore.pattern} />
+		<!-- Header section with title, date, and garment info -->
+		<div class="mb-6">
+			<h1 class="text-3xl md:text-4xl mb-1 font-cooper capitalize">
+				{mendStore.memory?.title || 'Your Memory'}
+			</h1>
+			<p class="text-xl text-gray-600 font-cooper">{memoryDate}</p>
+			{#if mendStore.garmentType || mendStore.material}
+				<p class="text-lg text-gray-500 capitalize mt-2 font-mono uppercase">
+					{#if mendStore.material && mendStore.garmentType}
+						{mendStore.material} {mendStore.garmentType}
+					{:else if mendStore.garmentType}
+						{mendStore.garmentType}
+					{:else if mendStore.material}
+						{mendStore.material}
+					{/if}
+				</p>
 			{/if}
 		</div>
 
-		<hr />
+		<!-- Pattern Display Section -->
+		<div class="bg-white border border-border rounded-lg p-6 mb-6">
+			{#if mendStore.pattern}
+				<PatternEditor pattern={mendStore.pattern} large={true} />
+			{/if}
+		</div>
 
+		<!-- Action Buttons -->
 		<div class="flex gap-2.5 flex-col">
 			<Button onclick={handleSendToPi}>Send to Pi</Button>
 			<Button onclick={handleSaveAndFinish}>Save & Finish</Button>
-			<Button onclick={goBack}>Back</Button>
 		</div>
 	</div>
 </div>

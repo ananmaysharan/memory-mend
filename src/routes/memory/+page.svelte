@@ -160,7 +160,7 @@
 				<input
 					type="text"
 					bind:value={memoryTitle}
-					class="w-full text-3xl md:text-4xl bg-transparent border border-border rounded px-2 py-1 outline-none focus:border-green transition-colors"
+					class="w-full text-3xl md:text-4xl bg-transparent border border-border rounded px-2 py-1 outline-none focus:border-grey-800 transition-colors"
 					placeholder="Your Memory"
 					disabled={isProcessing}
 				/>
@@ -198,7 +198,7 @@
 					<p class="font-mono uppercase text-gray-400 m-0">Add Images</p>
 				</div>
 			{:else}
-				<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+				<div class="grid grid-cols-3 md:grid-cols-5 gap-4">
 					{#each memoryImages as image, index}
 						<div class="relative bg-white p-2 md:p-3 shadow-sm aspect-square">
 							<img src={image} alt="Memory {index + 1}" class="w-full h-full object-cover" />

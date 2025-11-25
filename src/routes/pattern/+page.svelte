@@ -5,6 +5,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import TopBar from '$lib/components/navigation/TopBar.svelte';
 	import { mendStore } from '$lib/stores/mendStore.svelte';
+	import Eye from "phosphor-svelte/lib/Eye";
 
 	const memoryDate = $derived(
 		mendStore.memory?.timestamp
@@ -33,12 +34,12 @@
 </script>
 
 <div class="page">
-	<TopBar title="Your Memory Pattern" showBackButton={true} backDestination="/memory" />
+	<TopBar title="Your Pattern" showBackButton={true} backDestination="/memory" />
 	<div class="page-content">
 		<!-- Header section with captured image, title, and date -->
 		<div class="flex gap-4 mb-6 items-start">
 			<div class="flex-1">
-				<h1 class="text-3xl font-cooper md:text-4xl mb-1">
+				<h1 class="text-3xl font-cooper capitalize md:text-4xl mb-1">
 					{mendStore.memory?.title || 'Your Memory'}
 				</h1>
 				<p class="text-xl text-gray-600 font-cooper">{memoryDate}</p>
@@ -66,7 +67,7 @@
 
 				<!-- Memory Images -->
 				{#if mendStore.memory?.images && mendStore.memory.images.length > 0}
-					<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+					<div class="grid grid-cols-3 md:grid-cols-5 gap-4">
 						{#each mendStore.memory.images as image, index}
 							<div class="relative bg-white p-2 md:p-3 shadow-sm aspect-square">
 								<img
@@ -83,7 +84,7 @@
 
 		<!-- Action Buttons -->
 		<div class="flex flex-col gap-2.5">
-			<Button onclick={handleContinue}>Preview Pattern</Button>
+			<Button onclick={handleContinue}><Eye size={20} class="inline mr-2" /> Preview Pattern</Button>
 		</div>
 	</div>
 </div>
