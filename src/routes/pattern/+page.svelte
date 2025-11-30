@@ -5,7 +5,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import TopBar from '$lib/components/navigation/TopBar.svelte';
 	import { mendStore } from '$lib/stores/mendStore.svelte';
-	import Eye from "phosphor-svelte/lib/Eye";
+	import { downloadPatternSVG } from '$lib/services/svgGenerator';
 
 	const memoryDate = $derived(
 		mendStore.memory?.timestamp
@@ -26,6 +26,12 @@
 	function handleContinue() {
 		mendStore.goToPreview();
 		goto('/preview');
+	}
+
+	function handleDownloadSVG() {
+		if (mendStore.pattern) {
+			downloadPatternSVG(mendStore.pattern, 28); // Large cell size
+		}
 	}
 
 	function goBack() {
@@ -84,7 +90,8 @@
 
 		<!-- Action Buttons -->
 		<div class="flex flex-col gap-2.5">
-			<Button onclick={handleContinue}><Eye size={20} class="inline mr-2" /> Preview Pattern</Button>
+			<Button onclick={handleDownloadSVG}>Download SVG</Button>
+			<Button onclick={handleContinue}>Proceed</Button>
 		</div>
 	</div>
 </div>

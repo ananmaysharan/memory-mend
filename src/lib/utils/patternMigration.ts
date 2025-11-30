@@ -1,6 +1,7 @@
 /**
  * Pattern migration utilities
- * Handles migrating old 16x16 patterns to new 8x8 6-character ID patterns
+ * Handles migrating old patterns to new 7x7 6-character ID patterns
+ * Previous formats: 16x16 (original), 8x8 (Nov 2025)
  */
 
 import type { Mend, PatternData } from '$lib/types/mend';
@@ -8,8 +9,8 @@ import { generatePatternFromMemory } from '$lib/services/patternGenerator';
 
 /**
  * Check if a pattern needs migration (old format)
- * Old patterns: 16x16 grid, no 'id' field
- * New patterns: 8x8 grid with 'id' field
+ * Old patterns: 16x16 grid (original) or 8x8 grid (Nov 2025), no 'id' field
+ * New patterns: 7x7 grid with 'id' field
  */
 export function needsMigration(pattern: PatternData): boolean {
 	// Check if pattern has 'id' field - new patterns have this
@@ -17,13 +18,13 @@ export function needsMigration(pattern: PatternData): boolean {
 		return true;
 	}
 
-	// Check if grid size is wrong (old patterns were 16x16)
+	// Check if grid size is wrong (old patterns were 16x16 or 8x8)
 	if (pattern.grid.length !== pattern.config.gridSize) {
 		return true;
 	}
 
-	// Check if grid size is old size (16x16 instead of 8x8)
-	if (pattern.config.gridSize === 16) {
+	// Check if grid size is old size (16x16 or 8x8 instead of 7x7)
+	if (pattern.config.gridSize === 16 || pattern.config.gridSize === 8) {
 		return true;
 	}
 

@@ -6,6 +6,7 @@
 	import TopBar from '$lib/components/navigation/TopBar.svelte';
 	import { mendStore } from '$lib/stores/mendStore.svelte';
 	import { historyStore } from '$lib/stores/historyStore.svelte';
+	import { downloadPatternSVG } from '$lib/services/svgGenerator';
 
 	const memoryDate = $derived(
 		mendStore.memory?.timestamp
@@ -25,6 +26,12 @@
 
 	async function handleSendToPi() {
 		alert('Raspberry Pi integration coming soon!');
+	}
+
+	function handleDownloadSVG() {
+		if (mendStore.pattern) {
+			downloadPatternSVG(mendStore.pattern, 28);
+		}
 	}
 
 	function handleSaveAndFinish() {
@@ -54,10 +61,6 @@
 				alert(`Failed to save mend: ${errorMessage}`);
 			}
 		}
-	}
-
-	function goBack() {
-		goto('/pattern');
 	}
 </script>
 
@@ -92,6 +95,7 @@
 
 		<!-- Action Buttons -->
 		<div class="flex gap-2.5 flex-col">
+			<Button onclick={handleDownloadSVG}>Download SVG</Button>
 			<Button onclick={handleSendToPi}>Send to Pi</Button>
 			<Button onclick={handleSaveAndFinish}>Save & Finish</Button>
 		</div>

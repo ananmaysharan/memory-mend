@@ -1,20 +1,45 @@
 # Memory Mend - Project Plan & Progress
 
-## Recent Changes (2025-11-19) - Phase 2: YOLOv8 Integration
+## Recent Changes (2025-11-25) - Current State Update
 
-**DAMAGE DETECTION SYSTEM - YOLOV8 INTEGRATION:**
-- **Created FastAPI backend** - Python-based API service for YOLOv8 damage detection on port 5001
+**CURRENT IMPLEMENTATION STATUS:**
+
+### Phase 2: YOLOv8 Integration ✅ COMPLETE
+- **FastAPI backend** - Python-based API service for YOLOv8 damage detection on port 5001
 - **Implemented /detect endpoint** - Accepts base64 images, returns bounding box coordinates with confidence scores
-- **New detection workflow step** - Added /detection page between capture and memory steps
-- **Interactive bounding box editor** - Draggable corner vertices for manual adjustment (like Apple Notes document scanning)
-- **Scanning animation** - Visual feedback during API processing with animated scanning line
-- **Manual box addition** - Users can add detection box manually if none detected by AI
+- **Detection workflow step** - /detection page between capture and memory steps
+- **Interactive bounding box editor** - Draggable corner vertices for manual adjustment (Apple Notes-style)
+- **Detection state management** - Simple `isScanning` state with error handling and user feedback
+- **Manual box addition/removal** - Users can add or remove detection boxes manually
 - **Updated navigation flow** - capture → detection → memory → pattern → preview
-- **Environment configuration** - Added .env.example for API URL configuration (dev vs production)
+- **Environment configuration** - .env.example for API URL configuration (dev vs production)
 - **Railway deployment ready** - Dockerfile and railway.json for one-click deployment
 
+### Capture Page Enhancements ✅ COMPLETE
+- **Garment details input** - GarmentDetailsInput component with type and material selection
+- **9 garment types** - Shirt, Pants, Jacket, Dress, Skirt, Sweater, Shorts, Hat, Accessories
+- **9 material types** - Cotton, Denim, Wool, Silk, Polyester, Linen, Leather, Canvas, Other
+- **Form validation** - Both fields required before capturing image
+- **HEIC/HEIF support** - iOS-compatible image upload
+- **Back camera default** - Mobile-first camera experience
+
+### Memory Input Enhancements ✅ COMPLETE
+- **Multi-image upload** - Up to 6 images per memory with drag-and-drop support
+- **Image processing** - Auto-resize to 1024×1024, auto-compress to 0.75 quality
+- **Memory title field** - Editable title with current date display
+- **Visual grid layout** - 3×2 grid (mobile) or 5-column grid (desktop) for image previews
+- **Image removal** - Individual image deletion with X button
+- **Image stack display** - Polaroid-style stacked images on home page (ImageStack component)
+
+### Home Page Improvements ✅ COMPLETE
+- **ImageStack component** - Displays memory mends with stacked polaroid effect
+- **Interactive image cycling** - Click or swipe to cycle through images in stack
+- **Placeholder "Scan Mend" button** - Non-functional, for future ArUco marker scanning
+- **Recent mends grid** - Shows 6 most recent mends with memory titles and dates
+- **Smart navigation** - Clickable mend cards navigate to detail page with ?from=home parameter
+
 **Files created:**
-- `python-backend/main.py` - FastAPI server with YOLOv8 model integration
+- `python-backend/main.py` - FastAPI server with YOLOv8 model integration (290 lines)
 - `python-backend/requirements.txt` - Python dependencies (fastapi, ultralytics, opencv, torch)
 - `python-backend/Dockerfile` - Container configuration for Railway deployment
 - `python-backend/railway.json` - Railway deployment configuration
@@ -22,14 +47,19 @@
 - `python-backend/.gitignore` - Ignore model file, venv, etc.
 - `python-backend/.env.example` - Environment variables template
 - `src/routes/detection/+page.svelte` - Detection page with editing UI
-- `src/lib/components/detection/ScanningAnimation.svelte` - Loading animation overlay
-- `src/lib/components/detection/BoundingBoxEditor.svelte` - Interactive box editor with draggable vertices
+- `src/lib/components/detection/BoundingBoxEditor.svelte` - Interactive box editor with draggable vertices (305 lines)
+- `src/lib/components/capture/GarmentDetailsInput.svelte` - Garment type and material selector
+- `src/lib/components/memory/ImageStack.svelte` - Stacked polaroid image display component
+- `src/lib/components/ui/Select.svelte` - Reusable select dropdown component
 - `.env.example` - Frontend environment configuration (API URL)
 
 **Files updated:**
 - `src/lib/services/imageProcessing.ts` - Replaced mock detectDamage() with real FastAPI call
-- `src/lib/stores/mendStore.svelte.ts` - Added detection field, setDetection() method, updated workflow steps
-- `src/routes/capture/+page.svelte` - Navigate to /detection instead of /memory after capture
+- `src/lib/stores/mendStore.svelte.ts` - Added detection, garmentType, material fields, setDetection() method
+- `src/routes/capture/+page.svelte` - Added GarmentDetailsInput component, navigate to /detection
+- `src/routes/memory/+page.svelte` - Enhanced with multi-image upload (up to 6), drag-and-drop, title field
+- `src/routes/+page.svelte` - Integrated ImageStack component for displaying mends, added "Scan Mend" button
+- `src/lib/utils/imageUtils.ts` - Added resizeImage() and compressImage() functions
 
 **How it works:**
 1. User captures image on /capture page
@@ -138,14 +168,22 @@ src/
 │   ├── components/
 │   │   ├── camera/
 │   │   │   └── CameraCapture.svelte          [DONE] Camera with capture/upload
+│   │   ├── capture/
+│   │   │   └── GarmentDetailsInput.svelte    [DONE] Garment type & material selector
+│   │   ├── detection/
+│   │   │   └── BoundingBoxEditor.svelte      [DONE] Interactive damage detection editor
 │   │   ├── memory/
-│   │   │   └── MemoryInput.svelte            [DONE] Text/image memory input
+│   │   │   ├── MemoryInput.svelte            [DONE] Text/image memory input (legacy)
+│   │   │   └── ImageStack.svelte             [DONE] Polaroid-style stacked image display
+│   │   ├── navigation/
+│   │   │   ├── TopBar.svelte                 [DONE] Unified header component
+│   │   │   └── BackButton.svelte             [DONE] Consistent back button
 │   │   ├── pattern/
-│   │   │   └── PatternEditor.svelte          [DONE] Interactive grid editor
+│   │   │   └── PatternEditor.svelte          [DONE] Read-only grid display
 │   │   └── ui/
 │   │       ├── Button.svelte                 [DONE] Reusable button
 │   │       ├── Card.svelte                   [DONE] Card container
-│   │       └── LoadingSpinner.svelte         [DONE] Loading indicator
+│   │       └── Select.svelte                 [DONE] Dropdown selector
 │   ├── services/
 │   │   ├── imageProcessing.ts                [DONE] Image preprocessing
 │   │   ├── patternGenerator.ts               [DONE] Memory to pattern conversion
@@ -161,113 +199,202 @@ src/
 │       ├── mend.ts                           [DONE] Type definitions for mends
 │       └── gcode.ts                          [DONE] G-code configuration types
 ├── routes/
-│   ├── +page.svelte                          [DONE] Home page
-│   ├── capture/+page.svelte                  [DONE] Image capture
-│   ├── memory/+page.svelte                   [DONE] Memory input
-│   ├── pattern/+page.svelte                  [DONE] Pattern editing
-│   ├── preview/+page.svelte                  [DONE] G-code preview
+│   ├── +layout.svelte                        [DONE] Root layout
+│   ├── +page.svelte                          [DONE] Home page with ImageStack
+│   ├── capture/+page.svelte                  [DONE] Garment details & image capture
+│   ├── detection/+page.svelte                [DONE] YOLOv8 damage detection & editing
+│   ├── memory/+page.svelte                   [DONE] Memory input (title, text, up to 6 images)
+│   ├── pattern/+page.svelte                  [DONE] Pattern review (read-only)
+│   ├── preview/+page.svelte                  [DONE] Final preview & save
 │   └── history/
-│       ├── +page.svelte                      [DONE] All mends
+│       ├── +page.svelte                      [DONE] Full mend library
 │       └── [id]/+page.svelte                 [DONE] Individual mend details
 ```
 
 ### Key Features Implemented
 
 #### 1. Image Capture System
-**File:** src/lib/components/camera/CameraCapture.svelte
+**Files:**
+- src/lib/components/camera/CameraCapture.svelte
+- src/lib/components/capture/GarmentDetailsInput.svelte
+- src/routes/capture/+page.svelte
 
 Features:
-- [DONE] Device camera access via WebRTC
-- [DONE] Front/back camera toggle
-- [DONE] Photo capture with preview
-- [DONE] File upload fallback
-- [DONE] Retake functionality
+- [DONE] Garment type selection (9 types: Shirt, Pants, Jacket, Dress, Skirt, Sweater, Shorts, Hat, Accessories)
+- [DONE] Material selection (9 types: Cotton, Denim, Wool, Silk, Polyester, Linen, Leather, Canvas, Other)
+- [DONE] Form validation (both fields required)
+- [DONE] Device camera access via WebRTC (back camera default)
+- [DONE] Photo capture with 3:4 aspect ratio
+- [DONE] File upload fallback with HEIC/HEIF support
 - [DONE] Error handling for permission issues
 
 #### 2. Memory Encoding System
 **Files:**
-- src/lib/components/memory/MemoryInput.svelte
+- src/routes/memory/+page.svelte
+- src/lib/components/memory/ImageStack.svelte
 - src/lib/utils/hashUtils.ts
+- src/lib/utils/imageUtils.ts
 
 **How it works:**
-- [DONE] Accepts text and/or image memory
-- [DONE] Uses Web Crypto API (SHA-256) for hashing
-- [DONE] Converts hash to binary representation
-- [DONE] Maps binary to 16x16 grid (256 bits)
+- [DONE] Memory title input (editable text field)
+- [DONE] Memory text input (textarea)
+- [DONE] Multi-image upload (up to 6 images)
+- [DONE] Drag-and-drop image upload
+- [DONE] Image auto-resize to 1024×1024 max
+- [DONE] Image auto-compression (0.75 quality)
+- [DONE] Individual image removal
+- [DONE] Custom hash function for short 6-character IDs (base36)
 - [DONE] Deterministic: same memory = same pattern always
 
 **Example Flow:**
 ```
-Memory text: "My grandmother's garden"
+Memory:
+  title: "My grandmother's garden"
+  text: "She grew the most beautiful roses..."
+  images: [image1.jpg, image2.jpg]
     |
     v
-SHA-256 Hash: "a7b3c2d1..."
+Custom Hash Function (base36 encoding)
     |
     v
-Binary: "10101011001111010010..."
+6-Character ID: "A4K7M2"
     |
     v
-16x16 Grid: [
-  [true, false, true, ...],
-  [false, true, true, ...],
+Binary Representation (each char → 8 bits)
+    |
+    v
+8x8 Grid with Corner Markers:
+  [X,  1,  0,  1, ..., ||]  (TL: X, TR: ||)
+  [0,  1,  1,  0, ...,  1]
   ...
-]
+  [O,  1,  0,  1, ...,  ■]  (BL: O, BR: solid)
 ```
 
-#### 3. Pattern Generation & Editing
-**File:** src/lib/components/pattern/PatternEditor.svelte
+#### 3. Pattern Generation & Display
+**Files:**
+- src/lib/components/pattern/PatternEditor.svelte
+- src/lib/services/patternGenerator.ts
+- src/routes/pattern/+page.svelte
 
 Features:
-- [DONE] Interactive 16x16 stitch grid
-- [DONE] Click individual cells to toggle
-- [DONE] Click and drag to paint
-- [DONE] Invert entire pattern
-- [DONE] Clear entire pattern
-- [DONE] Live stitch count & percentage
-- [DONE] Visual indication of edited patterns
-- [DONE] Readonly mode for viewing
+- [DONE] Read-only 8x8 stitch grid display
+- [DONE] Deterministic pattern generation from memory ID
+- [DONE] Corner markers for orientation (TL: X, TR: ||, BL: O, BR: solid)
+- [DONE] 6-character base36 ID display
+- [DONE] Memory details shown below pattern
+- [DONE] No manual editing (patterns are non-editable)
 
-#### 4. Pattern Preview & Send
+#### 4. Damage Detection System (Phase 2)
+**Files:**
+- src/routes/detection/+page.svelte
+- src/lib/components/detection/BoundingBoxEditor.svelte
+- src/lib/services/imageProcessing.ts
+- python-backend/main.py
+
+Features:
+- [DONE] Automatic YOLOv8 damage detection on page load
+- [DONE] FastAPI backend with /detect endpoint
+- [DONE] Interactive bounding box with draggable corner vertices
+- [DONE] Manual box addition (if AI fails to detect)
+- [DONE] Box removal and retry functionality
+- [DONE] Visual feedback with dashed animated border
+- [DONE] Error handling with user-friendly messages
+- [DONE] Detection stored in mendStore for downstream use
+
+#### 5. Pattern Preview & Send
 **File:** src/routes/preview/+page.svelte
 
 Features:
-- [DONE] Preview final pattern
-- [DONE] Save mend to history
+- [DONE] Preview final pattern (large display)
+- [DONE] Show memory title and creation date
+- [DONE] Display garment type and material
+- [DONE] Save mend to history (localStorage)
 - [PLACEHOLDER] Non-functional "Send to Pi" button (future implementation)
 
-#### 5. State Management (Svelte 5 Runes)
+#### 6. State Management (Svelte 5 Runes)
 **Files:**
 - src/lib/stores/mendStore.svelte.ts
 - src/lib/stores/historyStore.svelte.ts
 
 **mendStore:**
 - [DONE] Tracks current workflow state
-- [DONE] Manages step progression (capture -> memory -> pattern -> preview)
-- [DONE] Stores image, memory, pattern, G-code
+- [DONE] Manages step progression (capture → detection → memory → pattern → preview)
+- [DONE] Stores image, garmentType, material, detection, memory, pattern
 - [DONE] Auto-saves to localStorage
 - [DONE] Can resume interrupted workflows
+- [DONE] Methods: setImage(), setDetection(), setMemory(), setPattern(), reset()
 
 **historyStore:**
 - [DONE] Manages all saved mends
-- [DONE] CRUD operations
-- [DONE] Search and filter
-- [DONE] Status tracking (draft, ready, sent, completed)
-- [DONE] Statistics aggregation
+- [DONE] CRUD operations (addMend, updateMend, deleteMend, getMendById)
+- [DONE] Sorted retrieval (getSortedMends by creation date)
+- [DONE] Automatic pattern migration for format changes
+- [DONE] localStorage persistence
 
-#### 6. Complete User Flow
-1. **Home (/)** - Landing page with "Start New Mend" button and grid of 6 most recent mends (clickable cards)
-   - If > 6 mends exist, shows "View Full Mend Library" button
-   - Clicking mend card navigates to detail with ?from=home parameter
-2. **Capture (/capture)** - Take/upload photo
-3. **Memory (/memory)** - Input memory and generate pattern
-4. **Pattern (/pattern)** - Review/edit pattern
-5. **Preview (/preview)** - Preview final pattern and send to Pi (placeholder)
-6. **Mend Library (/history)** - Full library view of all mends (clickable cards)
-   - Clicking mend card navigates to detail with ?from=library parameter
-7. **Mend Detail (/history/[id])** - View individual mend details, delete mend
-   - Smart back button returns to origin (home or library) based on ?from parameter
+#### 7. Complete User Flow
+1. **Home (/)** - Landing page with buttons and recent mends
+   - "Start New Mend" button (navigates to /capture)
+   - "Scan Mend" button (placeholder for ArUco marker scanning - non-functional)
+   - Grid of up to 6 most recent mends with ImageStack display
+   - Each mend card shows stacked polaroid images (clickable)
+   - Memory title and creation date displayed
+   - "View Full Mend Library" button if > 6 mends exist
+   - Clicking mend card navigates to /history/[id]?from=home
 
-#### 7. Data Persistence
+2. **Capture (/capture)** - Garment details and image capture
+   - Select garment type (dropdown: Shirt, Pants, Jacket, etc.)
+   - Select material (dropdown: Cotton, Denim, Wool, etc.)
+   - Both fields required before proceeding
+   - "Capture Image" button (opens camera)
+   - "Upload Image" button (file picker with HEIC support)
+   - Back camera default on mobile, 3:4 aspect ratio
+
+3. **Detection (/detection)** - YOLOv8 damage detection
+   - Automatic detection on page load (calls FastAPI /detect)
+   - Interactive bounding box editor with draggable vertices
+   - Manual box addition if AI detection fails
+   - Box removal option to reset
+   - "Continue" button proceeds to memory step (detection is optional)
+
+4. **Memory (/memory)** - Memory input
+   - Captured image preview (100×100 thumbnail)
+   - Editable memory title (default: "Memory Title")
+   - Current date display
+   - Memory text input (textarea)
+   - Multi-image upload (up to 6 images)
+   - Drag-and-drop support
+   - Auto-resize and compress images
+   - "Generate Encoded Pattern" button
+
+5. **Pattern (/pattern)** - Pattern review
+   - Large read-only 8×8 grid display
+   - Corner markers (TL: X, TR: ||, BL: O, BR: solid)
+   - 6-character memory ID displayed
+   - Memory details shown (title, text, images)
+   - "Continue to Preview" button
+
+6. **Preview (/preview)** - Final preview and save
+   - Large pattern display
+   - Memory title and creation date
+   - Garment type and material info
+   - "Send to Pi" button (placeholder alert - non-functional)
+   - "Save & Finish" button (saves to history, navigates to home)
+
+7. **Mend Library (/history)** - Full library view
+   - Grid of all saved mends (2-3 columns)
+   - Each card shows ImageStack, title, and date
+   - Clickable cards navigate to /history/[id]?from=library
+
+8. **Mend Detail (/history/[id])** - Individual mend view
+   - Full mend display with all data
+   - Garment details (type, material)
+   - Memory title, text, and images
+   - Repair area image with detection box
+   - Pattern display
+   - Context-aware back button (returns to home or library based on ?from parameter)
+   - "Delete Mend" button with confirmation
+
+#### 8. Data Persistence
 **File:** src/lib/utils/storage.ts
 
 Features:
@@ -280,32 +407,50 @@ Features:
 ### What Works Right Now
 
 **Working Features:**
-- End-to-End Flow: Capture -> Memory -> Pattern -> Preview & Save
-- Local Persistence: All mends saved in browser localStorage
-- Pattern Generation: Read-only, deterministic 8x8 grids with corner markers and 6-character IDs
-- Memory Encoding: Simple hash function for short, readable IDs
-- Recent Mends Grid: 6 most recent mends displayed on home page as clickable cards
-- Mend Library: Full library view at /history showing all mends as clickable cards
-- Unified Navigation: Consistent TopBar on all pages with context-aware back buttons
-- Mend Details: View individual mend details, delete mends
-- Clean UI: Tailwind CSS throughout, consistent layouts, mobile-first camera
-- Camera Access: Back camera by default, file upload with HEIC support
+- ✅ **Complete End-to-End Flow:** Capture → Detection → Memory → Pattern → Preview → Save
+- ✅ **YOLOv8 Damage Detection:** Real-time AI detection with FastAPI backend, interactive editing
+- ✅ **Garment Details:** Type and material selection on capture page
+- ✅ **Multi-Image Memories:** Up to 6 images per memory with drag-and-drop, auto-resize, auto-compress
+- ✅ **ImageStack Display:** Polaroid-style stacked images on home page (interactive cycling)
+- ✅ **Pattern Generation:** Read-only, deterministic 8×8 grids with corner markers and 6-character IDs
+- ✅ **Memory Encoding:** Custom hash function for short, readable base36 IDs
+- ✅ **Local Persistence:** All mends saved in browser localStorage
+- ✅ **Recent Mends Grid:** 6 most recent mends displayed on home page as clickable cards
+- ✅ **Mend Library:** Full library view at /history showing all mends as clickable cards
+- ✅ **Unified Navigation:** Consistent TopBar on all pages with context-aware back buttons
+- ✅ **Mend Details:** View individual mend details, delete mends with confirmation
+- ✅ **Clean UI:** Tailwind CSS throughout, consistent layouts, mobile-first design
+- ✅ **Camera Access:** Back camera by default on mobile, file upload with HEIC support
+- ✅ **Deployment Ready:** Frontend (Vercel) and backend (Railway) ready to deploy
 
 ### Testing Checklist
 
-- [x] Camera capture works (mobile-first, back camera default)
+- [x] Garment type and material selection works
+- [x] Camera capture works (mobile-first, back camera default, 3:4 aspect ratio)
 - [x] File upload works (HEIC/HEIF support)
-- [x] Memory text hashing works (6-character IDs)
-- [x] Pattern generation is deterministic (read-only 8x8 grids)
+- [x] YOLOv8 damage detection works (FastAPI /detect endpoint)
+- [x] Bounding box editor works (draggable vertices)
+- [x] Manual box addition/removal works
+- [x] Memory title input works
+- [x] Memory text input works
+- [x] Multi-image upload works (up to 6 images)
+- [x] Drag-and-drop image upload works
+- [x] Image resize and compression works
+- [x] Image removal from memory works
+- [x] Memory hashing works (6-character base36 IDs)
+- [x] Pattern generation is deterministic (read-only 8×8 grids)
+- [x] Corner markers display correctly
+- [x] ImageStack component works (stacked polaroid display)
+- [x] Image cycling in stack works (click/swipe)
 - [x] LocalStorage persistence works
 - [x] Navigation between pages works (unified TopBar)
 - [x] Context-aware back navigation works (query parameters)
 - [x] History page shows saved mends
 - [x] Individual mend details page works
-- [x] Delete mend works
-- [x] Workflow state is preserved
+- [x] Delete mend works with confirmation
+- [x] Workflow state is preserved across page reloads
 - [x] Preview page shows final pattern
-- [x] Save & Finish works
+- [x] Save & Finish works (saves to history, navigates to home)
 
 ---
 
@@ -392,6 +537,8 @@ Focus was on core damage detection first. ArUco markers will enable advanced fea
 - [ ] Add optional calibration step to detection workflow
 - [ ] Create UI guidance for marker placement in camera view
 - [ ] Store calibration data in detection object
+
+**📋 Note:** A detailed ArUco marker integration plan exists in `aruco_plan.md` at the root of this repository. Refer to that document for the complete implementation strategy.
 
 **Proposed Implementation:**
 
@@ -1040,44 +1187,67 @@ self.addEventListener('fetch', (event) => {
 
 ## Current Status Summary
 
-**[WORKING]**
-- Complete end-to-end flow (Capture → Detection → Memory → Pattern → Save)
-- Mobile-first camera capture with back camera default
-- **YOLOv8 damage detection** - FastAPI backend with real-time detection
-- **Interactive bounding box editor** - Draggable vertices for manual adjustment
-- **Scanning animation** - Visual feedback during detection
-- Memory hashing with 6-character IDs (base36)
-- Read-only pattern generation (8x8 grids with corner markers)
-- Local data persistence (localStorage)
-- Unified navigation with consistent TopBar on all pages
-- Context-aware back navigation using query parameters
-- History management (recent mends on home, full library page)
-- Clean, consistent UI with Tailwind CSS
+**[WORKING] ✅ FULLY FUNCTIONAL**
+- **Complete end-to-end flow:** Capture → Detection → Memory → Pattern → Preview → Save
+- **Garment details:** Type and material selection (9 types each) on capture page
+- **Mobile-first camera:** Back camera default, 3:4 aspect ratio, HEIC/HEIF support
+- **YOLOv8 damage detection:** FastAPI backend with real-time AI detection (/detect endpoint)
+- **Interactive bounding box editor:** Draggable corner vertices (Apple Notes-style)
+- **Manual detection override:** Add/remove boxes manually if AI fails
+- **Multi-image memories:** Up to 6 images per memory with drag-and-drop
+- **Image processing:** Auto-resize (1024×1024), auto-compress (0.75 quality)
+- **Memory title field:** Editable title with current date display
+- **ImageStack component:** Polaroid-style stacked images on home (interactive cycling)
+- **Memory hashing:** 6-character IDs (base36) from title + text + images
+- **Read-only patterns:** Deterministic 8×8 grids with corner markers (TL: X, TR: ||, BL: O, BR: solid)
+- **Local data persistence:** localStorage with automatic pattern migration
+- **Unified navigation:** TopBar on all pages, context-aware back buttons (?from parameter)
+- **History management:** 6 recent mends on home, full library at /history
+- **Mend details:** Full display with delete confirmation
+- **Clean UI:** Tailwind CSS, consistent layouts, mobile-first design
 
-**[INFRASTRUCTURE]**
-- FastAPI backend (python-backend/) - YOLOv8 detection service
-- Railway deployment ready - Dockerfile and config files
-- Environment-based API URL configuration
-- CORS configured for dev and production
+**[INFRASTRUCTURE] ✅ DEPLOYMENT READY**
+- **FastAPI backend:** python-backend/ directory with YOLOv8 service (290 lines)
+- **Railway.app ready:** Dockerfile, railway.json, health check endpoint
+- **Environment config:** .env.example for API URL (dev vs production)
+- **CORS configured:** localhost:5173 (dev) and *.vercel.app (production)
+- **Vercel ready:** Frontend uses adapter-auto for Vercel deployment
+- **HTTPS dev server:** Self-signed certificates for local PWA testing
 
-**[REMOVED]**
-- G-code generation (simplified for now)
-- Pattern editing features (now read-only, deterministic)
+**[COMPONENTS] 11 Svelte Components**
+- CameraCapture.svelte - Camera/video capture
+- GarmentDetailsInput.svelte - Garment type & material selector
+- BoundingBoxEditor.svelte - Damage detection editor (305 lines)
+- MemoryInput.svelte - Legacy memory input (not actively used)
+- ImageStack.svelte - Polaroid-style stacked images
+- TopBar.svelte - Unified header component
+- BackButton.svelte - Consistent back button
+- PatternEditor.svelte - Read-only pattern display
+- Button.svelte - Reusable button
+- Card.svelte - Card container
+- Select.svelte - Dropdown selector
 
-**[PLACEHOLDER]**
-- "Send to Pi" button (non-functional, for future implementation)
+**[REMOVED] 🗑️ Simplified**
+- G-code generation (gcodeGenerator.ts exists but not used)
+- Pattern editing features (patterns are now read-only, deterministic)
 
-**[PLANNED]**
-- ArUco marker detection (for size estimation)
-- Raspberry Pi integration
-- G-code generation (to be re-implemented when needed)
-- Backend infrastructure (database, auth)
-- Database integration
-- User authentication
-- Cloud storage
-- PWA features
-- Advanced ML features
-- Community features
+**[PLACEHOLDER] ⏸️ Non-Functional**
+- "Send to Pi" button on preview page (shows alert)
+- "Scan Mend" button on home page (for future ArUco scanning)
+
+**[PLANNED] 📋 Future Phases**
+- **Phase 3:** Backend & Database (SvelteKit server routes, PostgreSQL, Prisma, Vercel Blob)
+- **Phase 4:** Authentication (Lucia Auth, session management, user profiles)
+- **Phase 5:** Raspberry Pi integration (G-code sender, WebSocket status, queue management)
+- **Phase 6:** PWA & offline support (service worker, manifest, offline queue)
+- **Phase 7:** Advanced features (pattern library, multi-color, collaboration)
+- **ArUco markers:** Size calibration, automatic pattern scaling (deferred from Phase 2)
+- **G-code generation:** Re-implement when Pi integration begins
+- **Multiple detections:** Detect and mark multiple holes in one image
+- **Detection analytics:** Track accuracy and user adjustments
+- **User authentication:** Multi-user support with ownership
+- **Cloud storage:** Move from localStorage to database + blob storage
+- **Community features:** Shared patterns, social feed, collaboration
 
 ---
 
@@ -1094,18 +1264,22 @@ self.addEventListener('fetch', (event) => {
 8. **Monorepo Structure:** Python backend in same repo for easier development
 
 ### Design Decisions
-1. **No Auth for MVP:** Faster testing and iteration
-2. **Single User Initially:** Simplifies data model
+1. **No Auth for MVP:** Faster testing and iteration, single-user localStorage
+2. **Single User Initially:** Simplifies data model, easy migration to multi-user later
 3. **Camera-first Flow:** Mobile-optimized experience with back camera default
-4. **Read-only Patterns:** Deterministic, non-editable patterns for consistency
-5. **G-code Removed:** Simplified codebase to focus on core pattern generation
-6. **Unified Top Bar:** Consistent header on all pages improves UX
-7. **Smart Navigation with Query Params:** Context-aware back button improves UX
-8. **Recent Mends on Home:** Shows 6 most recent mends, full library accessible via button
-9. **Clickable Cards:** Entire mend card is clickable for better mobile UX
-10. **Detection Step Optional:** Users can proceed even if no damage detected (manual override)
-11. **Interactive Detection Editing:** Apple Notes-style draggable vertices for intuitive adjustment
-12. **Automatic Detection on Page Load:** Immediate feedback, scanning animation during processing
+4. **Garment Details First:** Type and material selection before capture for better data
+5. **Read-only Patterns:** Deterministic, non-editable patterns for consistency and simplicity
+6. **G-code Removed:** Simplified codebase to focus on core pattern generation (will re-add for Pi)
+7. **Unified Top Bar:** Consistent header on all pages improves UX
+8. **Smart Navigation with Query Params:** Context-aware back button (?from=home vs ?from=library)
+9. **Recent Mends on Home:** Shows 6 most recent with ImageStack, full library accessible via button
+10. **Clickable Cards:** Entire mend card is clickable for better mobile UX
+11. **Detection Step Optional:** Users can proceed even if no damage detected (manual override)
+12. **Interactive Detection Editing:** Apple Notes-style draggable vertices for intuitive adjustment
+13. **No Scanning Animation Component:** Simple `isScanning` state is sufficient, avoids over-engineering
+14. **Multi-Image Memories:** Up to 6 images per memory with auto-resize/compress for localStorage efficiency
+15. **ImageStack Component:** Polaroid-style stacked images create emotional, memory-focused UX
+16. **Detection is Optional:** Users can skip detection step or proceed without a box (flexibility over rigidity)
 
 ### Future Considerations
 1. **Multi-user Support:** Need solid auth and data isolation
@@ -1167,5 +1341,5 @@ npm run preview       # Preview production build
 
 ---
 
-**Last Updated:** 2025-11-19
-**Version:** 0.1.0 (MVP Prototype)
+**Last Updated:** 2025-11-25
+**Version:** 0.2.0 (Phase 2 Complete - YOLOv8 Integration + Enhanced UX)

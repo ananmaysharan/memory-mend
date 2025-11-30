@@ -1,18 +1,19 @@
 /**
  * Utilities for hashing memories and converting to binary patterns
  *
- * NEW APPROACH (2025-11-15):
+ * CURRENT APPROACH (2025-11-29):
  * - Simple hash function generates short, configurable-length IDs (default 6 digits)
  * - ID is base36 encoded (0-9, A-Z)
- * - Each character of ID is converted to 8-bit binary
- * - Binary is mapped to grid with corner markers
+ * - Each character of ID is converted to 7-bit binary (base36 ASCII 48-90, always < 128)
+ * - Binary is mapped to 7×7 grid with corner markers
+ * - 42 bits encoded in 45 available data cells (7×7 - 4 corners)
  */
 
 /**
  * Configuration for ID generation
  * Change ID_LENGTH to adjust grid size (more characters = larger grid needed)
  */
-export const ID_LENGTH = 6; // Each character = 8 bits = needs 6*8 = 48 bits total
+export const ID_LENGTH = 6; // Each character = 7 bits = needs 6*7 = 42 bits total
 
 /**
  * Simple hash function to generate short IDs
@@ -62,24 +63,44 @@ export async function hashMemory(memory: { title?: string; text?: string; images
 
 /**
  * Convert an ID string to binary representation
- * Each character is converted to 8-bit binary
+ * Each character is converted to 7-bit binary (base36 chars are ASCII 48-90, always < 128)
  */
 export function idToBinary(id: string): string {
 	return id.split('').map(char => {
-		return char.charCodeAt(0).toString(2).padStart(8, '0');
+		// Base36 chars (0-9, A-Z) have ASCII 48-90, so bit 7 is always 0
+		return char.charCodeAt(0).toString(2).padStart(7, '0');
+	}).join('');
+}
+
+/**
+ * Convert binary string back to ID string
+ * Each 7 bits is converted back to a character by adding the leading 0 for ASCII
+ */
+export function binaryToId(binary: string): string {
+	const chunks: string[] = [];
+	for (let i = 0; i < binary.length; i += 7) {
+		chunks.push(binary.substring(i, i + 7));
+	}
+
+	return chunks.map(chunk => {
+		const paddedChunk = chunk.padEnd(7, '0');
+		// Add leading 0 to make it 8-bit for ASCII conversion
+		const asciiCode = parseInt('0' + paddedChunk, 2);
+		return String.fromCharCode(asciiCode);
 	}).join('');
 }
 
 /**
  * Calculate required grid size for a given ID length
  * Grid needs 4 corner cells + data cells for binary representation
- * Each ID character = 8 bits
+ * Each ID character = 7 bits (base36 chars are ASCII 48-90, always < 128)
  *
- * Formula: gridSize^2 = 4 (corners) + (ID_LENGTH * 8) (data bits)
- * So: gridSize = ceil(sqrt(4 + ID_LENGTH * 8))
+ * Formula: gridSize^2 = 4 (corners) + (ID_LENGTH * 7) (data bits)
+ * For ID_LENGTH = 6: 4 + 42 = 46 cells needed, sqrt(46) = 6.78, ceil = 7
+ * Result: gridSize = 7 → 49 cells - 4 corners = 45 data cells (enough for 42 bits)
  */
 export function calculateGridSize(idLength: number = ID_LENGTH): number {
-	const dataBits = idLength * 8;
+	const dataBits = idLength * 7; // Changed from 8 to 7
 	const totalCells = 4 + dataBits; // 4 corner markers + data cells
 	return Math.ceil(Math.sqrt(totalCells));
 }
