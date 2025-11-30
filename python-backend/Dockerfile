@@ -26,10 +26,6 @@ COPY . .
 # Expose port (Railway will override this with $PORT)
 EXPOSE 5001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5001/health')"
-
 # Run the application
-# Railway sets PORT environment variable, so we use it
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-5001}
+# Railway sets PORT environment variable, so we use it with explicit shell invocation
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-5001}"]
