@@ -30,7 +30,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",  # SvelteKit dev server
         "https://localhost:5173",  # SvelteKit dev server with HTTPS
-        "https://*.vercel.app",  # Vercel preview deployments
+        "https://memory-mend.vercel.app",  # Vercel preview deployments
         # Add your production domain here when deployed
     ],
     allow_credentials=True,
