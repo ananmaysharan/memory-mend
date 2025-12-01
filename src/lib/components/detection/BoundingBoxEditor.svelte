@@ -25,6 +25,7 @@
 
 	// Component state
 	let imageElement = $state<HTMLImageElement | null>(null);
+	let svgElement = $state<SVGSVGElement | null>(null);
 	let containerElement = $state<HTMLDivElement | null>(null);
 	let imageWidth = $state(0);
 	let imageHeight = $state(0);
@@ -89,17 +90,21 @@
 	}
 
 	// Start dragging a vertex
-	function startDrag(vertex: "tl" | "tr" | "bl" | "br") {
+	function startDrag(vertex: "tl" | "tr" | "bl" | "br", event: MouseEvent) {
+		event.stopPropagation();
+		event.preventDefault();
 		draggingVertex = vertex;
 	}
 
 	// Handle mouse move during drag
 	function handleMouseMove(event: MouseEvent) {
-		if (!draggingVertex || !box || !imageElement || !containerElement)
+		if (!draggingVertex || !box || !svgElement || !containerElement)
 			return;
 
-		// Get mouse position relative to image
-		const rect = imageElement.getBoundingClientRect();
+		event.preventDefault();
+
+		// Get mouse position relative to SVG (where vertices are actually drawn)
+		const rect = svgElement.getBoundingClientRect();
 		const mouseX = (event.clientX - rect.left) / scale;
 		const mouseY = (event.clientY - rect.top) / scale;
 
@@ -183,14 +188,14 @@
 		<div
 			bind:this={containerElement}
 			class="relative w-full max-w-md overflow-hidden rounded bg-surface"
-			style="aspect-ratio: 3/4; cursor: {draggingVertex ? 'grabbing' : 'default'};"
+			style="aspect-ratio: 3/4;"
 		>
 		<!-- Image -->
 		<img
 			bind:this={imageElement}
 			src={image}
 			alt="Captured fabric"
-			class="w-full h-full object-cover pointer-events-none select-none user-select-none -webkit-user-drag-none"
+			class="w-full h-full object-contain pointer-events-none select-none user-select-none -webkit-user-drag-none"
 			onload={handleImageLoad}
 			draggable="false"
 		/>
@@ -198,6 +203,7 @@
 		<!-- Bounding box overlay (only if box exists) -->
 		{#if box && imageWidth > 0}
 			<svg
+				bind:this={svgElement}
 				class="pointer-events-none absolute inset-0 m-auto"
 				style="width: {imageWidth * scale}px; height: {imageHeight *
 					scale}px; overflow: visible;"
@@ -227,12 +233,8 @@
 						fill="white"
 						stroke="var(--color-blue)"
 						stroke-width="2"
-						class="pointer-events-auto cursor-grab active:cursor-grabbing"
-						style="cursor: {draggingVertex === vertex
-							? 'grabbing'
-							: 'grab'};"
-						onmousedown={() =>
-							startDrag(vertex as "tl" | "tr" | "bl" | "br")}
+						class="pointer-events-auto cursor-grab"
+						onmousedown={(e) => startDrag(vertex as "tl" | "tr" | "bl" | "br", e)}
 					/>
 				{/each}
 			</svg>
@@ -291,13 +293,8 @@
 </div>
 
 <style>
-	/* Smooth transitions for box adjustments */
-	rect {
-		transition: stroke-dashoffset 0.5s linear;
-	}
-
 	/* Prevent text selection during drag */
-	:global(body.dragging) {
+	:global(body) {
 		user-select: none;
 		-webkit-user-select: none;
 	}
