@@ -90,7 +90,6 @@
 
 		<!-- Action Buttons -->
 		<div class="flex flex-col gap-2.5">
-			<Button onclick={handleDownloadSVG}>Download SVG</Button>
 			<Button onclick={handleContinue}>Proceed</Button>
 		</div>
 	</div>
