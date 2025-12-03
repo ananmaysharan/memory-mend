@@ -170,6 +170,7 @@
 		<!-- Pattern Display Section -->
 		<div class="bg-white border border-border rounded-lg p-6 mb-6">
 			{#if isAnimating && animatedGrid.length > 0}
+				{@const gap = cellSize * 0.15}
 				<!-- Animated pattern grid (matching PatternEditor structure exactly) -->
 				<div class="flex flex-col items-center w-full">
 					<div class="inline-flex flex-col relative">
@@ -301,14 +302,56 @@
 						</div>
 
 						<!-- Optimized diagonal lines overlay (offset by 1 cell) -->
-						{#if animatedDiagonalLines.length > 0}
-							<svg
-								class="diagonal-overlay"
-								width={(gridSize + 2) * cellSize}
-								height={(gridSize + 2) * cellSize}
-								style="position: absolute; top: 0; left: 0; pointer-events: none;"
-								xmlns="http://www.w3.org/2000/svg"
-							>
+						<svg
+							class="diagonal-overlay"
+							width={(gridSize + 2) * cellSize}
+							height={(gridSize + 2) * cellSize}
+							style="position: absolute; top: 0; left: 0; pointer-events: none;"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<!-- Border lines connecting fiducials with gaps -->
+							<!-- Top line: X to || -->
+							<line
+								x1={cellSize * 0.9 + gap}
+								y1={cellSize * 0.5}
+								x2={8 * cellSize + cellSize * 0.35 - gap}
+								y2={cellSize * 0.5}
+								stroke="#000"
+								stroke-width={cellSize * 0.12}
+								stroke-linecap="butt"
+							/>
+							<!-- Right line: || to ■ -->
+							<line
+								x1={8 * cellSize + cellSize * 0.5}
+								y1={cellSize * 0.9 + gap}
+								x2={8 * cellSize + cellSize * 0.5}
+								y2={8 * cellSize + cellSize * 0.1 - gap}
+								stroke="#000"
+								stroke-width={cellSize * 0.12}
+								stroke-linecap="butt"
+							/>
+							<!-- Bottom line: O to ■ -->
+							<line
+								x1={cellSize * 0.88 + gap}
+								y1={8 * cellSize + cellSize * 0.5}
+								x2={8 * cellSize + cellSize * 0.1 - gap}
+								y2={8 * cellSize + cellSize * 0.5}
+								stroke="#000"
+								stroke-width={cellSize * 0.12}
+								stroke-linecap="butt"
+							/>
+							<!-- Left line: X to O -->
+							<line
+								x1={cellSize * 0.5}
+								y1={cellSize * 0.9 + gap}
+								x2={cellSize * 0.5}
+								y2={8 * cellSize + cellSize * 0.12 - gap}
+								stroke="#000"
+								stroke-width={cellSize * 0.12}
+								stroke-linecap="butt"
+							/>
+
+							{#if animatedDiagonalLines.length > 0}
 								{#each animatedDiagonalLines as line}
 									{@const x1 =
 										line.direction === 'nw-se'
@@ -331,8 +374,8 @@
 										stroke-linecap="butt"
 									/>
 								{/each}
-							</svg>
-						{/if}
+							{/if}
+						</svg>
 					</div>
 				</div>
 			{:else if mendStore.pattern}

@@ -149,7 +149,7 @@
 </script>
 
 <div class="page">
-	<TopBar title="Add Your Memory" showBackButton={true} backDestination="/detection" />
+	<TopBar title="Add Memory" showBackButton={true} backDestination="/detection" />
 	<div class="page-content">
 		<!-- Header section with captured image, title, and date -->
 		<div class="flex gap-4 mb-6 items-start">
@@ -195,7 +195,7 @@
 					ondrop={handleDrop}
 				>
 					<PlusCircle size={48} class="mx-auto mb-2 text-gray-400" />
-					<p class="font-mono uppercase text-gray-400 m-0">Add Images</p>
+					<p class="font-mono uppercase text-gray-400 m-0">Add Memory Media</p>
 				</div>
 			{:else}
 				<div class="grid grid-cols-3 md:grid-cols-5 gap-4">
@@ -220,7 +220,7 @@
 							onclick={openFilePicker}
 						>
 							<PlusCircle size={48} class="mx-auto mb-2 text-gray-400" />
-							<p class="font-mono uppercase text-gray-400 m-0 text-sm">Add Images</p>
+							<p class="font-mono uppercase text-gray-400 m-0 text-sm">Add More</p>
 						</div>
 					{/if}
 				</div>

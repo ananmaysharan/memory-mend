@@ -13,6 +13,7 @@
 	const baseCellSize = $derived(large ? 28 : pattern.config.cellSize);
 	const cellSize = $derived(baseCellSize);
 	const gridSize = $derived(pattern.config.gridSize);
+	const gap = $derived(cellSize * 0.15);
 
 	// Calculate optimized diagonal lines (no corner exclusion)
 	const diagonalLines = $derived(extractDiagonalLines(pattern.grid));
@@ -149,13 +150,55 @@
 		</div>
 
 		<!-- Optimized diagonal lines overlay (offset by 1 cell) -->
-		{#if diagonalLines.length > 0}
-			<svg
-				class="absolute top-0 left-0 pointer-events-none"
-				width={(gridSize + 2) * cellSize}
-				height={(gridSize + 2) * cellSize}
-				xmlns="http://www.w3.org/2000/svg"
-			>
+		<svg
+			class="absolute top-0 left-0 pointer-events-none"
+			width={(gridSize + 2) * cellSize}
+			height={(gridSize + 2) * cellSize}
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<!-- Border lines connecting fiducials with gaps -->
+			<!-- Top line: X to || -->
+			<line
+				x1={cellSize * 0.9 + gap}
+				y1={cellSize * 0.5}
+				x2={8 * cellSize + cellSize * 0.35 - gap}
+				y2={cellSize * 0.5}
+				stroke="#000"
+				stroke-width={cellSize * 0.12}
+				stroke-linecap="butt"
+			/>
+			<!-- Right line: || to ■ -->
+			<line
+				x1={8 * cellSize + cellSize * 0.5}
+				y1={cellSize * 0.9 + gap}
+				x2={8 * cellSize + cellSize * 0.5}
+				y2={8 * cellSize + cellSize * 0.1 - gap}
+				stroke="#000"
+				stroke-width={cellSize * 0.12}
+				stroke-linecap="butt"
+			/>
+			<!-- Bottom line: O to ■ -->
+			<line
+				x1={cellSize * 0.88 + gap}
+				y1={8 * cellSize + cellSize * 0.5}
+				x2={8 * cellSize + cellSize * 0.1 - gap}
+				y2={8 * cellSize + cellSize * 0.5}
+				stroke="#000"
+				stroke-width={cellSize * 0.12}
+				stroke-linecap="butt"
+			/>
+			<!-- Left line: X to O -->
+			<line
+				x1={cellSize * 0.5}
+				y1={cellSize * 0.9 + gap}
+				x2={cellSize * 0.5}
+				y2={8 * cellSize + cellSize * 0.12 - gap}
+				stroke="#000"
+				stroke-width={cellSize * 0.12}
+				stroke-linecap="butt"
+			/>
+
+			{#if diagonalLines.length > 0}
 				{#each diagonalLines as line}
 					{@const x1 = line.direction === 'nw-se'
 						? (line.startCol + 1) * cellSize
@@ -176,7 +219,7 @@
 						stroke-linecap="butt"
 					/>
 				{/each}
-			</svg>
-		{/if}
+			{/if}
+		</svg>
 	</div>
 </div>

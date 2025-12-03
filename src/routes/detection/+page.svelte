@@ -83,7 +83,7 @@
 
 <div class="page h-screen">
 	<!-- Top bar with back button -->
-	<TopBar title="Damage Detection" showBackButton={true} backDestination="/capture" />
+	<TopBar title="Detect Damage" showBackButton={true} backDestination="/capture" />
 
 	<!-- Main content -->
 	<main class="page-content flex-1 overflow-hidden flex flex-col">
