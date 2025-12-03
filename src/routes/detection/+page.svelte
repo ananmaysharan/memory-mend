@@ -26,8 +26,15 @@
 			return;
 		}
 
-		// Automatically run detection when page loads
-		await runDetection();
+		// Check if detection was already run (e.g., from scanning page)
+		if (mendStore.detectionAttempted) {
+			// Use existing detection result and error
+			detection = mendStore.detection;
+			error = mendStore.detectionError;
+		} else {
+			// No existing detection, run it now (backward compatibility)
+			await runDetection();
+		}
 	});
 
 	// Run YOLOv8 detection

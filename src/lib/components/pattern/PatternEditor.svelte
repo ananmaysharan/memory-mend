@@ -18,21 +18,16 @@
 	const diagonalLines = $derived(extractDiagonalLines(pattern.grid));
 </script>
 
-<div class="pattern-container">
-	<!-- Pattern Info -->
-	<div class="mb-4 text-center">
-		<p class="font-mono text-sm text-gray-600 m-0">
-			<strong>Pattern ID:</strong>
-			{pattern.id}
-		</p>
-	</div>
-
+<div class="flex flex-col items-center w-full">
 	<!-- Pattern Grid with Fiducials -->
-	<div class="pattern-grid">
+	<div class="inline-flex flex-col relative">
 		<!-- Top row: TL fiducial, empty cells, TR fiducial -->
 		<div class="flex">
 			<!-- TL Fiducial: X -->
-			<div class="cell" style="width: {cellSize}px; height: {cellSize}px;">
+			<div
+				class="border border-white box-border"
+				style="width: {cellSize}px; height: {cellSize}px;"
+			>
 				<svg width={cellSize} height={cellSize} xmlns="http://www.w3.org/2000/svg">
 					<line
 						x1={cellSize * 0.1}
@@ -55,10 +50,16 @@
 				</svg>
 			</div>
 			{#each Array(gridSize) as _}
-				<div class="cell" style="width: {cellSize}px; height: {cellSize}px;"></div>
+				<div
+					class="border border-white box-border"
+					style="width: {cellSize}px; height: {cellSize}px;"
+				></div>
 			{/each}
 			<!-- TR Fiducial: || -->
-			<div class="cell" style="width: {cellSize}px; height: {cellSize}px;">
+			<div
+				class="border border-white box-border"
+				style="width: {cellSize}px; height: {cellSize}px;"
+			>
 				<svg width={cellSize} height={cellSize} xmlns="http://www.w3.org/2000/svg">
 					<line
 						x1={cellSize * 0.35}
@@ -85,20 +86,32 @@
 		<!-- Middle rows: empty cell, 7x7 data grid, empty cell -->
 		{#each pattern.grid as row, rowIndex}
 			<div class="flex">
-				<div class="cell" style="width: {cellSize}px; height: {cellSize}px;"></div>
+				<div
+					class="border border-white box-border"
+					style="width: {cellSize}px; height: {cellSize}px;"
+				></div>
 				{#each row as cell, colIndex}
-					<div class="cell" style="width: {cellSize}px; height: {cellSize}px;">
+					<div
+						class="border border-white box-border"
+						style="width: {cellSize}px; height: {cellSize}px;"
+					>
 						<!-- Data cells - diagonal lines rendered in overlay -->
 					</div>
 				{/each}
-				<div class="cell" style="width: {cellSize}px; height: {cellSize}px;"></div>
+				<div
+					class="border border-white box-border"
+					style="width: {cellSize}px; height: {cellSize}px;"
+				></div>
 			</div>
 		{/each}
 
 		<!-- Bottom row: BL fiducial, empty cells, BR fiducial -->
 		<div class="flex">
 			<!-- BL Fiducial: O -->
-			<div class="cell" style="width: {cellSize}px; height: {cellSize}px;">
+			<div
+				class="border border-white box-border"
+				style="width: {cellSize}px; height: {cellSize}px;"
+			>
 				<svg width={cellSize} height={cellSize} xmlns="http://www.w3.org/2000/svg">
 					<circle
 						cx={cellSize / 2}
@@ -111,10 +124,16 @@
 				</svg>
 			</div>
 			{#each Array(gridSize) as _}
-				<div class="cell" style="width: {cellSize}px; height: {cellSize}px;"></div>
+				<div
+					class="border border-white box-border"
+					style="width: {cellSize}px; height: {cellSize}px;"
+				></div>
 			{/each}
 			<!-- BR Fiducial: ■ -->
-			<div class="cell" style="width: {cellSize}px; height: {cellSize}px;">
+			<div
+				class="border border-white box-border"
+				style="width: {cellSize}px; height: {cellSize}px;"
+			>
 				<svg width={cellSize} height={cellSize} xmlns="http://www.w3.org/2000/svg">
 					<rect
 						x={cellSize * 0.1}
@@ -132,10 +151,9 @@
 		<!-- Optimized diagonal lines overlay (offset by 1 cell) -->
 		{#if diagonalLines.length > 0}
 			<svg
-				class="diagonal-overlay"
+				class="absolute top-0 left-0 pointer-events-none"
 				width={(gridSize + 2) * cellSize}
 				height={(gridSize + 2) * cellSize}
-				style="position: absolute; top: 0; left: 0; pointer-events: none;"
 				xmlns="http://www.w3.org/2000/svg"
 			>
 				{#each diagonalLines as line}
@@ -162,31 +180,3 @@
 		{/if}
 	</div>
 </div>
-
-<style>
-	.pattern-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		width: 100%;
-	}
-
-	.pattern-grid {
-		display: inline-flex;
-		flex-direction: column;
-		position: relative; /* Enable absolute positioning for diagonal overlay */
-	}
-
-	.cell {
-		border: 1px solid #fff;
-		box-sizing: border-box;
-	}
-
-	/* Responsive sizing for smaller screens */
-	@media (max-width: 640px) {
-		.pattern-grid {
-			transform: scale(0.75);
-			transform-origin: top center;
-		}
-	}
-</style>

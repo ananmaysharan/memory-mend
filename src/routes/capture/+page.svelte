@@ -27,7 +27,7 @@
 			try {
 				const base64 = await blobToBase64(file);
 				mendStore.setImage(base64, garmentType, material);
-				goto('/detection');
+				goto('/scanning');
 			} catch (err) {
 				console.error('Error reading file:', err);
 			}
@@ -36,7 +36,7 @@
 
 	function handleCapture(imageData: string) {
 		mendStore.setImage(imageData, garmentType, material);
-		goto('/detection');
+		goto('/scanning');
 	}
 </script>
 

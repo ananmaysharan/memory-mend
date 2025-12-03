@@ -21,11 +21,20 @@ class MendStore {
 	// YOLOv8 detection result (optional)
 	detection = $state<Detection | null>(null);
 
+	// Track if detection has been attempted (to avoid re-running)
+	detectionAttempted = $state<boolean>(false);
+
+	// Detection error message (if detection failed)
+	detectionError = $state<string | null>(null);
+
 	// Memory data
 	memory = $state<Memory | null>(null);
 
 	// Generated/edited pattern
 	pattern = $state<PatternData | null>(null);
+
+	// Track if pattern animation has been shown
+	patternAnimationShown = $state<boolean>(false);
 
 	// Mend ID (generated when saving)
 	id = $state<string | null>(null);
@@ -75,6 +84,9 @@ class MendStore {
 		this.image = imageData;
 		this.garmentType = garmentType;
 		this.material = material;
+		this.detection = null;
+		this.detectionAttempted = false;
+		this.detectionError = null;
 		this.step = 'detection';
 		this.saveToStorage();
 	}
@@ -82,8 +94,10 @@ class MendStore {
 	/**
 	 * Set detection result (from YOLOv8 or manual)
 	 */
-	setDetection(detectionData: Detection | null) {
+	setDetection(detectionData: Detection | null, errorMessage: string | null = null) {
 		this.detection = detectionData;
+		this.detectionAttempted = true;
+		this.detectionError = errorMessage;
 		this.saveToStorage();
 	}
 
@@ -96,6 +110,7 @@ class MendStore {
 		// Generate pattern from memory
 		const pattern = await generatePatternFromMemory(memoryData);
 		this.pattern = pattern;
+		this.patternAnimationShown = false; // Reset animation flag for new pattern
 
 		this.step = 'pattern';
 		this.saveToStorage();
@@ -136,8 +151,11 @@ class MendStore {
 		this.material = null;
 		this.image = null;
 		this.detection = null;
+		this.detectionAttempted = false;
+		this.detectionError = null;
 		this.memory = null;
 		this.pattern = null;
+		this.patternAnimationShown = false;
 		this.id = null;
 		clearCurrentMend();
 	}
