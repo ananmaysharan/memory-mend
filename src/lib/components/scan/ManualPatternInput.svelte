@@ -1,0 +1,221 @@
+<script lang="ts">
+	/**
+	 * Manual Pattern Input Component
+	 * Interactive 7×7 grid for manually recreating embroidered patterns
+	 * Matches PatternEditor layout exactly
+	 */
+
+	interface Props {
+		onComplete: (grid: boolean[][]) => void;
+	}
+
+	let { onComplete }: Props = $props();
+
+	const GRID_SIZE = 7;
+	const CELL_SIZE = 28; // Match PatternEditor large size
+
+	// Initialize 7x7 grid with all false
+	let grid = $state<boolean[][]>(
+		Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false))
+	);
+
+	// Toggle cell
+	function toggleCell(row: number, col: number) {
+		grid[row][col] = !grid[row][col];
+	}
+
+	// Auto-decode when user makes changes
+	$effect(() => {
+		// Trigger decode whenever grid changes
+		onComplete(grid);
+	});
+
+	// Calculate gap for fiducial borders
+	const gap = $derived(CELL_SIZE * 0.15);
+</script>
+
+<div class="flex flex-col items-center w-full">
+	<div class="inline-flex flex-col relative">
+		<!-- Top row: TL fiducial, empty cells, TR fiducial -->
+		<div class="flex">
+			<!-- TL Fiducial: X -->
+			<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;">
+				<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
+					<line
+						x1={CELL_SIZE * 0.1}
+						y1={CELL_SIZE * 0.1}
+						x2={CELL_SIZE * 0.9}
+						y2={CELL_SIZE * 0.9}
+						stroke="#000"
+						stroke-width={CELL_SIZE * 0.12}
+						stroke-linecap="butt"
+					/>
+					<line
+						x1={CELL_SIZE * 0.9}
+						y1={CELL_SIZE * 0.1}
+						x2={CELL_SIZE * 0.1}
+						y2={CELL_SIZE * 0.9}
+						stroke="#000"
+						stroke-width={CELL_SIZE * 0.12}
+						stroke-linecap="butt"
+					/>
+				</svg>
+			</div>
+			{#each Array(GRID_SIZE) as _}
+				<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"></div>
+			{/each}
+			<!-- TR Fiducial: || -->
+			<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;">
+				<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
+					<line
+						x1={CELL_SIZE * 0.35}
+						y1={CELL_SIZE * 0.1}
+						x2={CELL_SIZE * 0.35}
+						y2={CELL_SIZE * 0.9}
+						stroke="#000"
+						stroke-width={CELL_SIZE * 0.12}
+						stroke-linecap="butt"
+					/>
+					<line
+						x1={CELL_SIZE * 0.65}
+						y1={CELL_SIZE * 0.1}
+						x2={CELL_SIZE * 0.65}
+						y2={CELL_SIZE * 0.9}
+						stroke="#000"
+						stroke-width={CELL_SIZE * 0.12}
+						stroke-linecap="butt"
+					/>
+				</svg>
+			</div>
+		</div>
+
+		<!-- Middle rows: empty cell, 7x7 data grid, empty cell -->
+		{#each grid as row, rowIndex}
+			<div class="flex">
+				<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"></div>
+				{#each row as cell, colIndex}
+					<div
+						class="border border-gray-300 box-border cursor-pointer hover:bg-gray-50 transition-colors"
+						style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"
+						onclick={() => toggleCell(rowIndex, colIndex)}
+						role="button"
+						tabindex="0"
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								toggleCell(rowIndex, colIndex);
+							}
+						}}
+					>
+						{#if cell}
+							<!-- Show diagonal X when cell is active -->
+							<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
+								<line
+									x1={0}
+									y1={0}
+									x2={CELL_SIZE}
+									y2={CELL_SIZE}
+									stroke="#000"
+									stroke-width={CELL_SIZE * 0.12}
+									stroke-linecap="butt"
+								/>
+								<line
+									x1={CELL_SIZE}
+									y1={0}
+									x2={0}
+									y2={CELL_SIZE}
+									stroke="#000"
+									stroke-width={CELL_SIZE * 0.12}
+									stroke-linecap="butt"
+								/>
+							</svg>
+						{/if}
+					</div>
+				{/each}
+				<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"></div>
+			</div>
+		{/each}
+
+		<!-- Bottom row: BL fiducial, empty cells, BR fiducial -->
+		<div class="flex">
+			<!-- BL Fiducial: O -->
+			<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;">
+				<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
+					<circle
+						cx={CELL_SIZE / 2}
+						cy={CELL_SIZE / 2}
+						r={(CELL_SIZE - CELL_SIZE * 0.24) / 2}
+						fill="none"
+						stroke="#000"
+						stroke-width={CELL_SIZE * 0.12}
+					/>
+				</svg>
+			</div>
+			{#each Array(GRID_SIZE) as _}
+				<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"></div>
+			{/each}
+			<!-- BR Fiducial: ■ -->
+			<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;">
+				<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
+					<rect
+						x={CELL_SIZE * 0.1}
+						y={CELL_SIZE * 0.1}
+						width={CELL_SIZE * 0.8}
+						height={CELL_SIZE * 0.8}
+						fill="none"
+						stroke="#000"
+						stroke-width={CELL_SIZE * 0.12}
+					/>
+				</svg>
+			</div>
+		</div>
+
+		<!-- Border lines connecting fiducials (matching PatternEditor) -->
+		<svg
+			class="absolute top-0 left-0 pointer-events-none"
+			width={(GRID_SIZE + 2) * CELL_SIZE}
+			height={(GRID_SIZE + 2) * CELL_SIZE}
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<!-- Top line: X to || -->
+			<line
+				x1={CELL_SIZE * 0.9 + gap}
+				y1={CELL_SIZE * 0.5}
+				x2={8 * CELL_SIZE + CELL_SIZE * 0.35 - gap}
+				y2={CELL_SIZE * 0.5}
+				stroke="#000"
+				stroke-width={CELL_SIZE * 0.12}
+				stroke-linecap="butt"
+			/>
+			<!-- Right line: || to ■ -->
+			<line
+				x1={8 * CELL_SIZE + CELL_SIZE * 0.5}
+				y1={CELL_SIZE * 0.9 + gap}
+				x2={8 * CELL_SIZE + CELL_SIZE * 0.5}
+				y2={8 * CELL_SIZE + CELL_SIZE * 0.1 - gap}
+				stroke="#000"
+				stroke-width={CELL_SIZE * 0.12}
+				stroke-linecap="butt"
+			/>
+			<!-- Bottom line: O to ■ -->
+			<line
+				x1={CELL_SIZE * 0.88 + gap}
+				y1={8 * CELL_SIZE + CELL_SIZE * 0.5}
+				x2={8 * CELL_SIZE + CELL_SIZE * 0.1 - gap}
+				y2={8 * CELL_SIZE + CELL_SIZE * 0.5}
+				stroke="#000"
+				stroke-width={CELL_SIZE * 0.12}
+				stroke-linecap="butt"
+			/>
+			<!-- Left line: X to O -->
+			<line
+				x1={CELL_SIZE * 0.5}
+				y1={CELL_SIZE * 0.9 + gap}
+				x2={CELL_SIZE * 0.5}
+				y2={8 * CELL_SIZE + CELL_SIZE * 0.12 - gap}
+				stroke="#000"
+				stroke-width={CELL_SIZE * 0.12}
+				stroke-linecap="butt"
+			/>
+		</svg>
+	</div>
+</div>

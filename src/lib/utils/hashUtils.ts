@@ -75,10 +75,14 @@ export function idToBinary(id: string): string {
 /**
  * Convert binary string back to ID string
  * Each 7 bits is converted back to a character by adding the leading 0 for ASCII
+ * Only processes the first ID_LENGTH chunks to avoid garbage characters from extra bits
  */
 export function binaryToId(binary: string): string {
 	const chunks: string[] = [];
-	for (let i = 0; i < binary.length; i += 7) {
+	// Only process ID_LENGTH chunks (6 chunks = 42 bits), ignore any extra bits
+	const maxChunks = ID_LENGTH;
+
+	for (let i = 0; i < Math.min(binary.length, maxChunks * 7); i += 7) {
 		chunks.push(binary.substring(i, i + 7));
 	}
 

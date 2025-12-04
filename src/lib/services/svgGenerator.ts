@@ -50,6 +50,18 @@ export function generateSVG(pattern: PatternData, cellSize: number = 20): string
 	svg += `    <!-- BR: ■ -->\n`;
 	svg += `    <rect x="${brX + cellSize * 0.1}" y="${brY + cellSize * 0.1}" width="${cellSize * 0.8}" height="${cellSize * 0.8}" />\n`;
 
+	// Border lines connecting fiducials with gaps
+	const gap = cellSize * 0.15;
+	svg += `    <!-- Border lines connecting fiducials -->\n`;
+	// Top line: X to ||
+	svg += `    <line x1="${cellSize * 0.9 + gap}" y1="${cellSize * 0.5}" x2="${(gridSize + 1) * cellSize + cellSize * 0.35 - gap}" y2="${cellSize * 0.5}" />\n`;
+	// Right line: || to ■
+	svg += `    <line x1="${(gridSize + 1) * cellSize + cellSize * 0.5}" y1="${cellSize * 0.9 + gap}" x2="${(gridSize + 1) * cellSize + cellSize * 0.5}" y2="${(gridSize + 1) * cellSize + cellSize * 0.1 - gap}" />\n`;
+	// Bottom line: O to ■
+	svg += `    <line x1="${cellSize * 0.88 + gap}" y1="${(gridSize + 1) * cellSize + cellSize * 0.5}" x2="${(gridSize + 1) * cellSize + cellSize * 0.1 - gap}" y2="${(gridSize + 1) * cellSize + cellSize * 0.5}" />\n`;
+	// Left line: X to O
+	svg += `    <line x1="${cellSize * 0.5}" y1="${cellSize * 0.9 + gap}" x2="${cellSize * 0.5}" y2="${(gridSize + 1) * cellSize + cellSize * 0.12 - gap}" />\n`;
+
 	svg += `  </g>\n\n`;
 	svg += `  <!-- Optimized diagonal stitch lines -->\n`;
 	svg += `  <g id="stitches" stroke="#000" stroke-width="${cellSize * 0.12}" stroke-linecap="butt">\n`;

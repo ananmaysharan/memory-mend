@@ -26,7 +26,7 @@
 	<div class="page-content">
 		<div class="mt-5 flex gap-3 md:flex-row flex-col">
 			<Button onclick={startNewMend}><PlusCircle size={18} weight="bold" />Start New Mend</Button>
-			<Button><Scan size={18} weight="bold" />Scan Mend</Button>
+			<Button onclick={() => goto('/scan')}><Scan size={18} weight="bold" />Scan Mend</Button>
 		</div>
 
 		<h2 class='my-5'> Your Memory Mends </h2>
@@ -73,16 +73,3 @@
 		{/if}
 	</div>
 </div>
-
-<style>
-	.single-image {
-		aspect-ratio: 1;
-		overflow: hidden;
-	}
-
-	.single-image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-</style>

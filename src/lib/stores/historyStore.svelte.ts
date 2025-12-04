@@ -164,6 +164,15 @@ class HistoryStore {
 			completed: this.getMendsByStatus('completed').length
 		};
 	}
+
+	/**
+	 * Find a mend by its pattern ID
+	 * @param patternId - The 6-character pattern ID (e.g., "A1B2C3")
+	 * @returns The matching mend, or undefined if not found
+	 */
+	findMendByPatternId(patternId: string): Mend | undefined {
+		return this.mends.find((m) => m.pattern.id === patternId);
+	}
 }
 
 // Export singleton instance
