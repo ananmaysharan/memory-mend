@@ -1,0 +1,228 @@
+<script lang="ts">
+	/**
+	 * Pattern Analysis Page - Detects and decodes pattern from captured image
+	 */
+
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import TopBar from '$lib/components/navigation/TopBar.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import { historyStore } from '$lib/stores/historyStore.svelte';
+	import { gridToBinary } from '$lib/utils/hashUtils';
+	import { findMendByPatternId as findInSupabase } from '$lib/services/supabase';
+
+	// Get image from navigation state
+	let capturedImage = $state<string | null>(null);
+	let isScanning = $state(true);
+	let error = $state<string | null>(null);
+	let grid = $state<boolean[][]>([]);
+	let patternId = $state<string>('******');
+	let foundMend = $state<any>(null);
+
+	onMount(async () => {
+		// Get image from state
+		const state = history.state;
+		if (!state?.image) {
+			// No image, redirect back to scan
+			goto('/scan');
+			return;
+		}
+
+		capturedImage = state.image;
+
+		// Start pattern detection
+		try {
+			const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
+			const response = await fetch(`${apiUrl}/detect-pattern`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ image: capturedImage })
+			});
+
+			if (!response.ok) {
+				throw new Error('Pattern detection failed');
+			}
+
+			const result = await response.json();
+
+			// Check confidence
+			if (result.confidence < 0.6) {
+				error = 'Could not detect pattern clearly. Please try again with better lighting or closer to the pattern.';
+				isScanning = false;
+				return;
+			}
+
+			// Use detected grid
+			grid = result.grid;
+			isScanning = false;
+
+			// Decode the pattern
+			decodePattern();
+
+			// Look up the mend
+			await lookupMend();
+		} catch (err) {
+			console.error('Pattern detection error:', err);
+			error = 'Failed to detect pattern. Please try again.';
+			isScanning = false;
+		}
+	});
+
+	function decodePattern() {
+		// Check if grid has any data
+		const hasData = grid.some((row) => row.some((cell) => cell === true));
+
+		if (!hasData) {
+			patternId = '******';
+			return;
+		}
+
+		// Convert grid to binary
+		const binary = gridToBinary(grid);
+
+		// Progressively decode character by character
+		const chars: string[] = [];
+		const VALID_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+		for (let i = 0; i < 6; i++) {
+			const start = i * 7;
+			const chunk = binary.substring(start, start + 7);
+
+			if (chunk.length < 7 || chunk === '0000000') {
+				chars.push('*');
+			} else {
+				const paddedChunk = chunk.padEnd(7, '0');
+				const asciiCode = parseInt('0' + paddedChunk, 2);
+				const char = String.fromCharCode(asciiCode);
+
+				if (VALID_CHARS.includes(char.toUpperCase())) {
+					chars.push(char);
+				} else {
+					chars.push('*');
+				}
+			}
+		}
+
+		patternId = chars.join('');
+	}
+
+	async function lookupMend() {
+		// Try local lookup first
+		let mend = historyStore.findMendByPatternId(patternId);
+
+		// If not found locally, try Supabase
+		if (!mend) {
+			try {
+				const supabaseMend = await findInSupabase(patternId);
+
+				if (supabaseMend) {
+					historyStore.addMend(supabaseMend);
+					mend = supabaseMend;
+				}
+			} catch (err) {
+				console.error('Supabase lookup error:', err);
+			}
+		}
+
+		foundMend = mend;
+	}
+
+	function handleTryAgain() {
+		goto('/scan');
+	}
+
+	function handleViewMend() {
+		if (foundMend) {
+			goto(`/history/${foundMend.id}`);
+		}
+	}
+</script>
+
+<div class="page">
+	<TopBar title="Analyzing Pattern" showBackButton={true} backDestination="/scan" />
+
+	<div class="page-content">
+		<!-- Captured Image with Scanning Animation -->
+		{#if capturedImage}
+			<div class="relative w-full max-w-md mx-auto overflow-hidden rounded bg-surface mb-6" style="aspect-ratio: 3/4;">
+				<img
+					src={capturedImage}
+					alt="Captured pattern"
+					class="w-full h-full object-contain"
+				/>
+				{#if isScanning}
+					<div class="scanning-bar"></div>
+				{/if}
+			</div>
+		{/if}
+
+		<!-- Status Text -->
+		{#if isScanning}
+			<p class="text-center text-gray-600 mb-6">Detecting pattern...</p>
+		{:else if error}
+			<div class="mb-6">
+				<p class="text-center text-red-800 mb-4">{error}</p>
+				<Button onclick={handleTryAgain}>Try Again</Button>
+			</div>
+		{:else}
+			<!-- Pattern ID Display -->
+			<div class="mb-6">
+				<div class="bg-white border-2 border-border rounded-lg py-4 flex flex-col items-center">
+					<p class="text-s mb-2 font-mono text-gray-400 uppercase tracking-wide">Decoded Pattern ID</p>
+					<p class="text-3xl mb-0 font-doto text-black font-bold tracking-widest text-center">
+						{patternId}
+					</p>
+				</div>
+			</div>
+
+			<!-- Result -->
+			{#if foundMend}
+				<div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+					<p class="text-green-800 font-medium mb-2">Memory Found!</p>
+					<p class="text-gray-700 mb-1"><strong>{foundMend.title || 'Untitled'}</strong></p>
+					{#if foundMend.text}
+						<p class="text-gray-600 text-sm line-clamp-2">{foundMend.text}</p>
+					{/if}
+				</div>
+				<Button onclick={handleViewMend}>View Full Memory</Button>
+			{:else}
+				<div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+					<p class="text-gray-800 font-medium mb-2">Pattern not found</p>
+					<p class="text-gray-600 text-sm">This pattern is not in your library or the global database.</p>
+				</div>
+				<Button onclick={handleTryAgain}>Scan Another Pattern</Button>
+			{/if}
+		{/if}
+	</div>
+</div>
+
+<style>
+	.scanning-bar {
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 4px;
+		background: var(--color-blue);
+		box-shadow: 0 0 8px rgba(173, 215, 247, 0.6);
+		animation: scan 2s ease-in-out infinite;
+	}
+
+	@keyframes scan {
+		0%,
+		100% {
+			top: 0;
+		}
+		50% {
+			top: calc(100% - 4px);
+		}
+	}
+
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+</style>

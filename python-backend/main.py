@@ -75,6 +75,18 @@ class DetectionResponse(BaseModel):
     image_height: int
 
 
+class PatternDetectionRequest(BaseModel):
+    image: str  # base64-encoded image
+    debug: Optional[bool] = False
+
+
+class PatternDetectionResponse(BaseModel):
+    grid: List[List[bool]]  # 7x7 grid
+    confidence: float  # 0-1
+    corner_markers_found: int  # Should be 4
+    debug_image: Optional[str] = None
+
+
 # Helper function to decode base64 image
 def decode_base64_image(base64_string: str) -> Image.Image:
     """
@@ -198,6 +210,164 @@ async def detect_damage(request: DetectionRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Detection failed: {str(e)}"
+        )
+
+
+def detect_corner_markers(image_gray: np.ndarray) -> dict:
+    """
+    Find 4 corner markers using contour detection.
+    Returns dict with corner positions: {tl, tr, bl, br}
+    """
+    # Apply binary threshold
+    _, binary = cv2.threshold(image_gray, 127, 255, cv2.THRESH_BINARY_INV)
+
+    # Find contours
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    if len(contours) == 0:
+        return {}
+
+    # Sort by area and get largest contours
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)
+
+    # Get the centers of the 4 largest contours
+    corners_found = []
+    for contour in contours[:10]:  # Check top 10 contours
+        M = cv2.moments(contour)
+        if M["m00"] != 0:
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+            corners_found.append((cx, cy))
+
+    if len(corners_found) < 4:
+        return {}
+
+    # Sort corners by position to identify which is which
+    # TL = smallest x+y, TR = largest x-y, BL = smallest x-y, BR = largest x+y
+    corners_found = sorted(corners_found, key=lambda p: p[0] + p[1])
+    tl = corners_found[0]  # Top-left (smallest x+y)
+
+    corners_found = sorted(corners_found, key=lambda p: p[0] - p[1], reverse=True)
+    tr = corners_found[0]  # Top-right (largest x-y)
+
+    corners_found = sorted(corners_found, key=lambda p: p[0] - p[1])
+    bl = corners_found[0]  # Bottom-left (smallest x-y)
+
+    corners_found = sorted(corners_found, key=lambda p: p[0] + p[1], reverse=True)
+    br = corners_found[0]  # Bottom-right (largest x+y)
+
+    return {
+        "tl": tl,
+        "tr": tr,
+        "bl": bl,
+        "br": br
+    }
+
+
+def extract_grid_from_corners(image_gray: np.ndarray, corners: dict) -> List[List[bool]]:
+    """
+    Extract 7x7 grid using perspective transform.
+    Returns 2D list of booleans (True = stitch/dark, False = no stitch/light)
+    """
+    # Get corner points
+    src_points = np.float32([
+        corners["tl"],
+        corners["tr"],
+        corners["bl"],
+        corners["br"]
+    ])
+
+    # Target size for the warped pattern (larger for better sampling)
+    target_size = 700  # 100px per cell
+    dst_points = np.float32([
+        [0, 0],
+        [target_size, 0],
+        [0, target_size],
+        [target_size, target_size]
+    ])
+
+    # Compute perspective transform
+    matrix = cv2.getPerspectiveTransform(src_points, dst_points)
+    warped = cv2.warpPerspective(image_gray, matrix, (target_size, target_size))
+
+    # Apply threshold
+    _, binary = cv2.threshold(warped, 127, 255, cv2.THRESH_BINARY_INV)
+
+    # Sample 7x7 grid
+    grid = []
+    cell_size = target_size // 7
+
+    for row in range(7):
+        grid_row = []
+        for col in range(7):
+            # Sample from center of cell
+            y = row * cell_size + cell_size // 2
+            x = col * cell_size + cell_size // 2
+
+            # Get pixel value (0 = white/no stitch, 255 = black/stitch)
+            pixel = binary[y, x]
+            grid_row.append(bool(pixel > 127))
+
+        grid.append(grid_row)
+
+    return grid
+
+
+@app.post("/detect-pattern", response_model=PatternDetectionResponse)
+async def detect_pattern(request: PatternDetectionRequest):
+    """
+    Detect embroidery pattern from photo and extract 7x7 grid.
+
+    Args:
+        request: PatternDetectionRequest with base64 image
+
+    Returns:
+        PatternDetectionResponse with grid and confidence
+    """
+    try:
+        # Decode image
+        image = decode_base64_image(request.image)
+
+        # Convert to grayscale numpy array for OpenCV
+        image_np = np.array(image)
+        image_gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+
+        print(f"Processing pattern detection on {image.size} image...")
+
+        # Detect corner markers
+        corners = detect_corner_markers(image_gray)
+        corners_found = len(corners)
+
+        if corners_found < 4:
+            print(f"⚠️  Only found {corners_found} corners (need 4)")
+            return PatternDetectionResponse(
+                grid=[[False] * 7 for _ in range(7)],
+                confidence=0.0,
+                corner_markers_found=corners_found
+            )
+
+        # Extract grid
+        grid = extract_grid_from_corners(image_gray, corners)
+
+        # Calculate confidence based on corners found and grid validity
+        confidence = 1.0 if corners_found == 4 else 0.5
+
+        print(f"✅ Pattern detected with {corners_found} corners, confidence: {confidence}")
+
+        return PatternDetectionResponse(
+            grid=grid,
+            confidence=confidence,
+            corner_markers_found=corners_found
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except Exception as e:
+        print(f"❌ Pattern detection error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Pattern detection failed: {str(e)}"
         )
 
 
