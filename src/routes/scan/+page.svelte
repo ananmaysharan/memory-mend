@@ -104,7 +104,7 @@
 	<div class="page-content">
 		<h2 class="mb-4">Decode Pattern</h2>
 		<p class="text-gray-600 mb-6">
-			Fill out the memory mend pattern by tapping on the squares.
+			Fill out the mend pattern below to unlock the memory.
 		</p>
 
 		<!-- Manual Pattern Input -->
@@ -127,7 +127,7 @@
 
 		<!-- Unlock Button (always visible) -->
 		<div class="mt-6">
-			<Button onclick={unlockMend}>Unlock Mend Memory</Button>
+			<Button onclick={unlockMend}>Unlock Memory</Button>
 		</div>
 	</div>
 </div>

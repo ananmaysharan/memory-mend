@@ -40,7 +40,7 @@
 	}
 </script>
 
-<div class="page h-screen">
+<div class="page">
 	<TopBar title="New Repair" showBackButton={true} backDestination="/" />
 	<div class="page-content flex-1 overflow-hidden flex flex-col">
 		{#if showCamera}

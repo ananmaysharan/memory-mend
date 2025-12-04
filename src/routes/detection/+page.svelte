@@ -81,9 +81,9 @@
 	}
 </script>
 
-<div class="page h-screen">
+<div class="page">
 	<!-- Top bar with back button -->
-	<TopBar title="Detect Damage" showBackButton={true} backDestination="/capture" />
+	<TopBar title="Detection" showBackButton={true} backDestination="/capture" />
 
 	<!-- Main content -->
 	<main class="page-content flex-1 overflow-hidden flex flex-col">
