@@ -60,6 +60,7 @@ export interface Mend {
 	createdAt: number;
 	updatedAt: number;
 	status: 'draft' | 'ready' | 'sent' | 'completed';
+	isPublic?: boolean; // Privacy flag for Supabase sharing (default: true)
 }
 
 /**

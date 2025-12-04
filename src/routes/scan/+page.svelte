@@ -9,7 +9,8 @@
 	import ManualPatternInput from '$lib/components/scan/ManualPatternInput.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { historyStore } from '$lib/stores/historyStore.svelte';
-	import { gridToBinary, binaryToId } from '$lib/utils/hashUtils';
+	import { gridToBinary } from '$lib/utils/hashUtils';
+	import { findMendByPatternId as findInSupabase } from '$lib/services/supabase';
 
 	// State
 	let grid = $state<boolean[][]>([]);
@@ -36,23 +37,62 @@
 		// Convert grid to binary
 		const binary = gridToBinary(grid);
 
-		// Convert binary to ID
-		const decodedId = binaryToId(binary);
+		// Progressively decode character by character
+		const chars: string[] = [];
+		const VALID_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-		patternId = decodedId;
+		for (let i = 0; i < 6; i++) {
+			const start = i * 7;
+			const chunk = binary.substring(start, start + 7);
+
+			if (chunk.length < 7 || chunk === '0000000') {
+				// Not enough bits or empty, show asterisk
+				chars.push('*');
+			} else {
+				// Try to decode this chunk
+				const paddedChunk = chunk.padEnd(7, '0');
+				const asciiCode = parseInt('0' + paddedChunk, 2);
+				const char = String.fromCharCode(asciiCode);
+
+				// Only show if it's a valid base36 character
+				if (VALID_CHARS.includes(char.toUpperCase())) {
+					chars.push(char);
+				} else {
+					chars.push('*');
+				}
+			}
+		}
+
+		patternId = chars.join('');
 	}
 
-	function unlockMend() {
+	async function unlockMend() {
 		error = null;
 
-		// Look up mend by pattern ID
-		const mend = historyStore.findMendByPatternId(patternId);
+		// 1. Try local lookup first
+		let mend = historyStore.findMendByPatternId(patternId);
+
+		// 2. If not found locally, try Supabase
+		if (!mend) {
+			try {
+				const supabaseMend = await findInSupabase(patternId);
+
+				// If found in Supabase, add to local history for offline access
+				if (supabaseMend) {
+					historyStore.addMend(supabaseMend);
+					mend = supabaseMend;
+				}
+			} catch (err) {
+				console.error('Supabase lookup error:', err);
+				// Continue - will show "not found" below
+			}
+		}
 
 		if (mend) {
 			// Pattern found - navigate to mend detail page
 			goto(`/history/${mend.id}`);
 		} else {
-			// Pattern not found
+			// Pattern not found in local or Supabase
 			error = 'Pattern not found. Try again.';
 		}
 	}
@@ -85,11 +125,9 @@
 			<p class="mt-4 text-red-800 text-sm text-center">{error}</p>
 		{/if}
 
-		<!-- Unlock Button (show when pattern is decoded, not asterisks) -->
-		{#if patternId !== '******'}
-			<div class="mt-6">
-				<Button onclick={unlockMend}>Unlock Mend Memory</Button>
-			</div>
-		{/if}
+		<!-- Unlock Button (always visible) -->
+		<div class="mt-6">
+			<Button onclick={unlockMend}>Unlock Mend Memory</Button>
+		</div>
 	</div>
 </div>

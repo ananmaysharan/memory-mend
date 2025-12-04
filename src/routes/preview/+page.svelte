@@ -7,6 +7,11 @@
 	import { mendStore } from '$lib/stores/mendStore.svelte';
 	import { historyStore } from '$lib/stores/historyStore.svelte';
 	import { downloadPatternSVG } from '$lib/services/svgGenerator';
+	import { uploadMendToSupabase, isSupabaseAvailable } from '$lib/services/supabase';
+	import type { Mend } from '$lib/types/mend';
+
+	// Privacy control
+	let sharePublicly = $state(true);
 
 	const memoryDate = $derived(
 		mendStore.memory?.timestamp
@@ -34,13 +39,29 @@
 		}
 	}
 
-	function handleSaveAndFinish() {
+	async function handleSaveAndFinish() {
 		try {
-			const mend = mendStore.getMend();
-			historyStore.addMend({
-				...mend,
-				status: 'ready'
-			});
+			const partialMend = mendStore.getMend();
+
+			// Add privacy flag and status
+			const mendToSave = {
+				...partialMend,
+				status: 'ready' as const,
+				isPublic: sharePublicly
+			};
+
+			// Save locally - historyStore.addMend will handle missing fields and generate defaults
+			const savedMend = historyStore.addMend(mendToSave);
+
+			// Upload to Supabase if sharing is enabled
+			if (sharePublicly && isSupabaseAvailable()) {
+				const result = await uploadMendToSupabase(savedMend);
+				if (!result.success) {
+					console.error('Supabase upload failed:', result.error);
+					// Non-blocking: continue even if upload fails
+				}
+			}
+
 			mendStore.reset();
 			goto('/');
 		} catch (error) {
@@ -91,6 +112,19 @@
 			{#if mendStore.pattern}
 				<PatternEditor pattern={mendStore.pattern} large={true} />
 			{/if}
+		</div>
+
+		<!-- Privacy Control -->
+		<div class="mb-6">
+			<label class="flex items-start gap-3 cursor-pointer">
+				<input type="checkbox" bind:checked={sharePublicly} class="mt-1" />
+				<div>
+					<p class="font-medium">Share publicly</p>
+					<p class="text-sm text-gray-600">
+						Allow others to discover this memory by scanning the pattern.
+					</p>
+				</div>
+			</label>
 		</div>
 
 		<!-- Action Buttons -->
