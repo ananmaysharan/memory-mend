@@ -45,11 +45,9 @@
 			}
 
 			const result = await response.json();
-			console.log('Detection result:', {
-				confidence: result.confidence,
-				corners: result.corner_markers_found,
-				gridSize: result.grid?.length
-			});
+			console.log('Detection result:', result);
+			console.log('Grid row 0:', result.grid[0]);
+			console.log('Grid row 0 cell types:', result.grid[0].map((c: any) => typeof c));
 
 			grid = result.grid;
 			isScanning = false;

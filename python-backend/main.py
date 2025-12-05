@@ -446,7 +446,7 @@ def decode_grid_from_fiducials(image_gray: np.ndarray, fiducials: dict) -> List[
     return [[bool(cell) for cell in row] for row in grid.tolist()]
 
 
-@app.post("/detect-pattern", response_model=PatternDetectionResponse)
+@app.post("/detect-pattern")
 async def detect_pattern(request: PatternDetectionRequest):
     """
     Detect embroidery pattern from photo and extract 7x7 grid.
@@ -491,12 +491,16 @@ async def detect_pattern(request: PatternDetectionRequest):
         filled_count = sum(sum(1 for cell in row if cell) for row in grid)
         print(f"Pattern detected: {corners_found} corners, confidence: {confidence}, filled cells: {filled_count}/49")
         print(f"Grid sample row 0: {grid[0]}")
+        print(f"Grid row 0 type check: {[type(c).__name__ for c in grid[0]]}")
 
-        return PatternDetectionResponse(
-            grid=grid,
-            confidence=confidence,
-            corner_markers_found=corners_found
-        )
+        # Return plain dict to bypass Pydantic serialization
+        response_data = {
+            "grid": grid,
+            "confidence": float(confidence),
+            "corner_markers_found": int(corners_found)
+        }
+        print(f"Response grid row 0: {response_data['grid'][0]}")
+        return response_data
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

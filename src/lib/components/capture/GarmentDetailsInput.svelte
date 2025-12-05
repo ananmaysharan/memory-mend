@@ -18,6 +18,7 @@
 		{ value: 'pants', label: 'Pants' },
 		{ value: 'jacket', label: 'Jacket' },
 		{ value: 'dress', label: 'Dress' },
+		{ value: 'skirt', label: 'Skirt' },
 		{ value: 'sweater', label: 'Sweater' },
 		{ value: 'jeans', label: 'Jeans' },
 		{ value: 'socks', label: 'Socks' },
