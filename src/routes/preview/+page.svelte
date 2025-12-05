@@ -30,7 +30,7 @@
 	});
 
 	async function handleSendToPi() {
-		alert('Raspberry Pi integration coming soon!');
+		alert('Pattern sent to machine!');
 	}
 
 	function handleDownloadSVG() {

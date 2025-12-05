@@ -56,7 +56,6 @@
 				bind:this={fileInputElement}
 				type="file"
 				accept="image/*,image/heic,image/heif"
-				capture="environment"
 				onchange={handleFileUpload}
 				class="hidden"
 			/>

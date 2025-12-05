@@ -18,6 +18,8 @@
 	let isStreaming = $state(false);
 	let error = $state<string | null>(null);
 	let capturedImage = $state<string | null>(null);
+	let torchSupported = $state(false);
+	let torchEnabled = $state(false);
 
 	async function startCamera() {
 		try {
@@ -37,6 +39,7 @@
 				videoElement.srcObject = mediaStream;
 				await videoElement.play();
 				isStreaming = true;
+				await enableTorch();
 			}
 		} catch (err) {
 			console.error('Error accessing camera:', err);
@@ -50,6 +53,36 @@
 			stream = null;
 		}
 		isStreaming = false;
+		torchEnabled = false;
+		torchSupported = false;
+	}
+
+	async function enableTorch() {
+		if (!stream) return;
+
+		try {
+			const videoTrack = stream.getVideoTracks()[0];
+
+			// Check if getCapabilities is supported
+			if (typeof videoTrack.getCapabilities !== 'function') {
+				return;
+			}
+
+			const capabilities = videoTrack.getCapabilities();
+
+			// Check if torch is supported
+			if ('torch' in capabilities && capabilities.torch) {
+				await videoTrack.applyConstraints({
+					advanced: [{ torch: true }]
+				});
+				torchSupported = true;
+				torchEnabled = true;
+			}
+		} catch (err) {
+			console.warn('Could not enable torch:', err);
+			torchSupported = false;
+			torchEnabled = false;
+		}
 	}
 
 	function capturePhoto() {
