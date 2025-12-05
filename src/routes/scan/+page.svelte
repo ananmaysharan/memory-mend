@@ -7,14 +7,16 @@
 	import TopBar from '$lib/components/navigation/TopBar.svelte';
 	import CameraCapture from '$lib/components/camera/CameraCapture.svelte';
 	import { blobToBase64 } from '$lib/utils/imageUtils';
+	import { scanStore } from '$lib/stores/scanStore.svelte';
 	import UploadSimple from 'phosphor-svelte/lib/UploadSimple';
 	import PencilSimple from 'phosphor-svelte/lib/PencilSimple';
 
 	let fileInputElement: HTMLInputElement | null = $state(null);
 
 	function handleCameraCapture(imageData: string) {
-		// Navigate to analyzing page with image data
-		goto('/scan/analyzing', { state: { image: imageData } });
+		// Store image in scan store and navigate to analyzing page
+		scanStore.setScannedImage(imageData);
+		goto('/scan/analyzing');
 	}
 
 	function handleManualDecode() {
@@ -32,7 +34,9 @@
 		if (file) {
 			try {
 				const base64 = await blobToBase64(file);
-				goto('/scan/analyzing', { state: { image: base64 } });
+				// Store image in scan store and navigate to analyzing page
+				scanStore.setScannedImage(base64);
+				goto('/scan/analyzing');
 			} catch (err) {
 				console.error('Error reading file:', err);
 			}
