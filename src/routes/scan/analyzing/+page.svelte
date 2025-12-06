@@ -185,9 +185,9 @@
 			<!-- Pattern ID Display - Show whenever pattern has been decoded -->
 			{#if patternId && patternId !== '******'}
 				<div class="mb-6">
-					<div class="bg-white border-2 border-border rounded-lg py-4 flex flex-col items-center">
+					<div class="bg-white border border-border rounded-lg py-4 flex flex-col items-center">
 						<p class="text-s mb-2 font-mono text-gray-400 uppercase tracking-wide">Decoded Pattern ID</p>
-						<p class="text-3xl mb-0 font-doto text-black font-bold tracking-widest text-center">
+						<p class="text-3xl mb-0 font-fig text-black tracking-widest text-center">
 							{patternId}
 						</p>
 					</div>

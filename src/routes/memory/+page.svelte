@@ -163,6 +163,7 @@
 					class="w-full text-3xl md:text-4xl bg-transparent border border-border rounded px-2 py-1 outline-none focus:border-grey-800 transition-colors"
 					placeholder="Your Memory"
 					disabled={isProcessing}
+					onfocus={(e) => e.currentTarget.select()}
 				/>
 				<p class="text-xl text-gray-600 ml-1 mt-2 font-cooper">{currentDate}</p>
 			</div>

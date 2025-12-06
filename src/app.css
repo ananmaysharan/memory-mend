@@ -16,6 +16,7 @@
   --font-doto: "Doto", sans-serif;
   --font-mono: "Geist Mono", monospace;
   --font-cooper: "Cooper", serif;
+  --font-fig: "Fig", serif;
 }
 
 @font-face {
@@ -23,6 +24,13 @@
   font-style: normal;
   font-display: swap;
   src: url("/fonts/Cooper-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: Fig;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/Fig-Serif.woff2") format("woff2");
 }
 
 /* Base Layer - Apply to all elements by default */
@@ -44,7 +52,7 @@
 
   /* Typography defaults */
   h1 {
-    @apply text-[2rem] font-semibold mb-2.5 font-doto uppercase text-[#222];
+    @apply text-[2rem] mb-2.5 font-fig uppercase text-[#222];
   }
 
   h2 {

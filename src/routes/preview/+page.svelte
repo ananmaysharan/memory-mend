@@ -94,7 +94,7 @@
 </script>
 
 <div class="page">
-	<TopBar title="Mend Preview" showBackButton={true} backDestination="/pattern" />
+	<TopBar title="Preview" showBackButton={true} backDestination="/pattern" />
 	<div class="page-content">
 		<!-- Header section with title, date, and garment info -->
 		<div class="mb-6">
@@ -123,14 +123,14 @@
 		</div>
 
 		<!-- Privacy Control -->
-		<div class="mb-6">
-			<label class="flex items-start gap-3 cursor-pointer">
-				<input type="checkbox" bind:checked={sharePublicly} class="mt-1" />
-				<div>
-					<p class="font-medium">Share publicly</p>
-					<p class="text-sm text-gray-600">
-						Allow others to discover this memory by scanning the pattern.
-					</p>
+		<div class="bg-white border border-border rounded-lg mb-6 p-6">
+			<label class="flex items-start mb-0 gap-4 cursor-pointer">
+				<input type="checkbox" bind:checked={sharePublicly} class="w-6 h-6 accent-orange-600 shrink-0 mt-0.5" />
+				<div class="flex-1">
+					<h3 class="font-medium mb-0">Share Mend Publicly</h3>
+					<!-- <p class="text-sm mb-0 text-gray-600">
+						Allow others to discover this mend memory by scanning the pattern.
+					</p> -->
 				</div>
 			</label>
 		</div>
