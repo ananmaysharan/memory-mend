@@ -9,6 +9,7 @@
 	let showCamera = $state(false);
 	let garmentType = $state('');
 	let material = $state('');
+	let fabricConstruction = $state('');
 	let fileInputElement: HTMLInputElement;
 
 	function handleCaptureImage() {
@@ -26,7 +27,7 @@
 		if (file) {
 			try {
 				const base64 = await blobToBase64(file);
-				mendStore.setImage(base64, garmentType, material);
+				mendStore.setImage(base64, garmentType, material, fabricConstruction);
 				goto('/scanning');
 			} catch (err) {
 				console.error('Error reading file:', err);
@@ -35,13 +36,13 @@
 	}
 
 	function handleCapture(imageData: string) {
-		mendStore.setImage(imageData, garmentType, material);
+		mendStore.setImage(imageData, garmentType, material, fabricConstruction);
 		goto('/scanning');
 	}
 </script>
 
 <div class="page">
-	<TopBar title="New Repair" showBackButton={true} backDestination="/" />
+	<TopBar title="New Mend" showBackButton={true} backDestination="/" />
 	<div class="page-content flex-1 overflow-hidden flex flex-col">
 		{#if showCamera}
 			<CameraCapture onCapture={handleCapture} />
@@ -49,6 +50,7 @@
 			<GarmentDetailsInput
 				bind:garmentType
 				bind:material
+				bind:fabricConstruction
 				onCaptureImage={handleCaptureImage}
 				onUploadImage={handleUploadImage}
 			/>

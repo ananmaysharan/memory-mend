@@ -63,7 +63,7 @@
 
 <div class="page">
 	<!-- Top bar without back button to prevent interruption -->
-	<TopBar title="Analyzing" showBackButton={false} />
+	<TopBar title="Detection" showBackButton={false} />
 
 	<!-- Main content -->
 	<main class="page-content flex-1 overflow-hidden flex flex-col">

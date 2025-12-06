@@ -7,11 +7,12 @@
 	interface Props {
 		garmentType: string;
 		material: string;
+		fabricConstruction: string;
 		onCaptureImage: () => void;
 		onUploadImage: () => void;
 	}
 
-	let { garmentType = $bindable(), material = $bindable(), onCaptureImage, onUploadImage }: Props = $props();
+	let { garmentType = $bindable(), material = $bindable(), fabricConstruction = $bindable(), onCaptureImage, onUploadImage }: Props = $props();
 
 	const garmentOptions = [
 		{ value: 'shirt', label: 'Shirt' },
@@ -38,7 +39,16 @@
 		{ value: 'other', label: 'Not Sure' }
 	];
 
-	const isValid = $derived(garmentType !== '' && material !== '');
+	const fabricConstructionOptions = [
+		{ value: 'knit', label: 'Knit' },
+		{ value: 'woven', label: 'Woven' },
+		{ value: 'lace', label: 'Lace' },
+		{ value: 'felt', label: 'Felt' },
+		{ value: 'crochet', label: 'Crochet' },
+		{ value: 'not-sure', label: 'Not Sure' }
+	];
+
+	const isValid = $derived(garmentType !== '' && material !== '' && fabricConstruction !== '');
 
 	function handleCaptureImage() {
 		if (isValid) {
@@ -60,7 +70,7 @@
 		<Select
 			bind:value={garmentType}
 			options={garmentOptions}
-			label="Type of Clothing"
+			label="Garment Type"
 			placeholder="Select garment type"
 		/>
 
@@ -69,6 +79,13 @@
 			options={materialOptions}
 			label="Material"
 			placeholder="Select material"
+		/>
+
+		<Select
+			bind:value={fabricConstruction}
+			options={fabricConstructionOptions}
+			label="Fabric Construction"
+			placeholder="Select fabric construction"
 		/>
 
 		<div class="flex flex-col gap-2.5 mt-6">

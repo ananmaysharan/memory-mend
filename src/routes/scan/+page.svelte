@@ -48,13 +48,9 @@
 	<TopBar title="Scan Mend" showBackButton={true} backDestination="/" />
 
 	<div class="page-content">
-		<h2 class="mb-4">Scan Pattern</h2>
-		<p class="text-gray-600 mb-6">
-			Position your camera over the embroidered pattern.
-		</p>
 
 		<!-- Camera Capture -->
-		<div class="mb-6">
+		<div class="mb-6 flex flex-col gap-2.5">
 			<CameraCapture onCapture={handleCameraCapture} />
 		</div>
 
@@ -66,6 +62,7 @@
 				<UploadSimple size={18} weight="bold" />
 				Upload Image
 			</button>
+			<p class="text-center italic">or...</p>
 			<button
 				onclick={handleManualDecode}
 			>

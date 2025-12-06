@@ -101,7 +101,7 @@
 	<TopBar title="Manual Decode" showBackButton={true} backDestination="/scan" />
 
 	<div class="page-content">
-		<h2 class="mb-4">Decode Pattern</h2>
+		<!-- <h2 class="mb-4">Unlock Memory</h2> -->
 		<p class="text-gray-600 mb-6">
 			Fill out the mend pattern below to unlock the memory.
 		</p>

@@ -20,7 +20,7 @@ export function generateSVG(pattern: PatternData, cellSize: number = 20): string
 	const diagonalLines = extractDiagonalLines(pattern.grid);
 
 	let svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+<svg width="1.5in" height="1.5in" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <title>Memory Mend Pattern - ${pattern.id}</title>
   <desc>Embroidery pattern for memory ID: ${pattern.id}</desc>
 

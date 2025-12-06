@@ -161,7 +161,7 @@
 </script>
 
 <div class="page">
-	<TopBar title="Analyzing Pattern" showBackButton={true} backDestination="/scan" />
+	<TopBar title="Scanning" showBackButton={true} backDestination="/scan" />
 
 	<div class="page-content">
 		<!-- Captured Image with Scanning Animation -->

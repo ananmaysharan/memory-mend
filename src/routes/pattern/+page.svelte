@@ -145,7 +145,7 @@
 </script>
 
 <div class="page">
-	<TopBar title="Your Pattern" showBackButton={true} backDestination="/memory" />
+	<TopBar title="Pattern" showBackButton={true} backDestination="/memory" />
 	<div class="page-content">
 		<!-- Header section with title and date -->
 		<div class="flex gap-4 mb-6 items-start">

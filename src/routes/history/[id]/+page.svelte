@@ -7,7 +7,7 @@
 	import TopBar from '$lib/components/navigation/TopBar.svelte';
 	import { historyStore } from '$lib/stores/historyStore.svelte';
 
-	const mendId = $derived($page.params.id);
+	const mendId = $derived($page.params.id ?? '');
 	const mend = $derived(historyStore.getMendById(mendId));
 	const from = $derived($page.url.searchParams.get('from'));
 
@@ -45,7 +45,7 @@
 
 {#if mend}
 	<div class="page">
-		<TopBar title="Mend Details" showBackButton={true} backHandler={handleBack} />
+		<TopBar title="Memory Mend" showBackButton={true} backHandler={handleBack} />
 		<div class="page-content">
 			<!-- Header section with title, date, and garment info -->
 			<div class="mb-6">
@@ -103,7 +103,7 @@
 	</div>
 {:else}
 	<div class="page">
-		<TopBar title="Mend Details" showBackButton={true} backHandler={handleBack} />
+		<TopBar title="Memory Mend" showBackButton={true} backHandler={handleBack} />
 		<div class="page-content">
 			<p>Mend not found.</p>
 		</div>

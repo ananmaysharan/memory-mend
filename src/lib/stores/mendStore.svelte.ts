@@ -14,6 +14,7 @@ class MendStore {
 	// Garment details
 	garmentType = $state<string | null>(null);
 	material = $state<string | null>(null);
+	fabricConstruction = $state<string | null>(null);
 
 	// Captured image
 	image = $state<string | null>(null);
@@ -54,6 +55,7 @@ class MendStore {
 		if (saved) {
 			this.garmentType = saved.garmentType || null;
 			this.material = saved.material || null;
+			this.fabricConstruction = saved.fabricConstruction || null;
 			this.image = saved.image || null;
 			this.detection = saved.detection || null;
 			this.memory = saved.memory || null;
@@ -69,6 +71,7 @@ class MendStore {
 		saveCurrentMend({
 			garmentType: this.garmentType || undefined,
 			material: this.material || undefined,
+			fabricConstruction: this.fabricConstruction || undefined,
 			image: this.image || undefined,
 			detection: this.detection || undefined,
 			memory: this.memory || undefined,
@@ -80,10 +83,11 @@ class MendStore {
 	/**
 	 * Set captured image with garment details
 	 */
-	setImage(imageData: string, garmentType: string, material: string) {
+	setImage(imageData: string, garmentType: string, material: string, fabricConstruction: string) {
 		this.image = imageData;
 		this.garmentType = garmentType;
 		this.material = material;
+		this.fabricConstruction = fabricConstruction;
 		this.detection = null;
 		this.detectionAttempted = false;
 		this.detectionError = null;
@@ -149,6 +153,7 @@ class MendStore {
 		this.step = 'capture';
 		this.garmentType = null;
 		this.material = null;
+		this.fabricConstruction = null;
 		this.image = null;
 		this.detection = null;
 		this.detectionAttempted = false;
@@ -168,6 +173,7 @@ class MendStore {
 			id: this.id || undefined,
 			garmentType: this.garmentType || undefined,
 			material: this.material || undefined,
+			fabricConstruction: this.fabricConstruction || undefined,
 			image: this.image || undefined,
 			detection: this.detection || undefined,
 			memory: this.memory || undefined,

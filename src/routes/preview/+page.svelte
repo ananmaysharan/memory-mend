@@ -86,7 +86,7 @@
 </script>
 
 <div class="page">
-	<TopBar title="Preview & Send" showBackButton={true} backDestination="/pattern" />
+	<TopBar title="Mend Preview" showBackButton={true} backDestination="/pattern" />
 	<div class="page-content">
 		<!-- Header section with title, date, and garment info -->
 		<div class="mb-6">
@@ -129,8 +129,8 @@
 
 		<!-- Action Buttons -->
 		<div class="flex gap-2.5 flex-col">
-			<Button onclick={handleDownloadSVG}>Download SVG</Button>
-			<Button onclick={handleSendToPi}>Send to Pi</Button>
+			<Button onclick={handleDownloadSVG}>Download Pattern</Button>
+			<Button onclick={handleSendToPi}>Send to Machine</Button>
 			<Button onclick={handleSaveAndFinish}>Save & Finish</Button>
 		</div>
 	</div>

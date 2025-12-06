@@ -149,7 +149,7 @@
 </script>
 
 <div class="page">
-	<TopBar title="Add Memory" showBackButton={true} backDestination="/detection" />
+	<TopBar title="Memory" showBackButton={true} backDestination="/detection" />
 	<div class="page-content">
 		<!-- Header section with captured image, title, and date -->
 		<div class="flex gap-4 mb-6 items-start">

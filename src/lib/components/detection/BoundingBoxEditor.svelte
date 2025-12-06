@@ -89,24 +89,36 @@
 		onChange(null);
 	}
 
+	// Helper function to extract coordinates from mouse or touch events
+	function getEventCoordinates(event: MouseEvent | TouchEvent): { clientX: number; clientY: number } {
+		if (event instanceof MouseEvent) {
+			return { clientX: event.clientX, clientY: event.clientY };
+		} else if (event instanceof TouchEvent && event.touches.length > 0) {
+			return { clientX: event.touches[0].clientX, clientY: event.touches[0].clientY };
+		}
+		// Fallback for touchend (use changedTouches)
+		return { clientX: 0, clientY: 0 };
+	}
+
 	// Start dragging a vertex
-	function startDrag(vertex: "tl" | "tr" | "bl" | "br", event: MouseEvent) {
+	function startDrag(vertex: "tl" | "tr" | "bl" | "br", event: MouseEvent | TouchEvent) {
 		event.stopPropagation();
 		event.preventDefault();
 		draggingVertex = vertex;
 	}
 
-	// Handle mouse move during drag
-	function handleMouseMove(event: MouseEvent) {
+	// Handle mouse/touch move during drag
+	function handleMouseMove(event: MouseEvent | TouchEvent) {
 		if (!draggingVertex || !box || !svgElement || !containerElement)
 			return;
 
 		event.preventDefault();
 
-		// Get mouse position relative to SVG (where vertices are actually drawn)
+		// Get pointer position relative to SVG (where vertices are actually drawn)
+		const coords = getEventCoordinates(event);
 		const rect = svgElement.getBoundingClientRect();
-		const mouseX = (event.clientX - rect.left) / scale;
-		const mouseY = (event.clientY - rect.top) / scale;
+		const mouseX = (coords.clientX - rect.left) / scale;
+		const mouseY = (coords.clientY - rect.top) / scale;
 
 		// Constrain to image bounds
 		const clampedX = Math.max(0, Math.min(imageWidth, mouseX));
@@ -178,7 +190,12 @@
 	}
 </script>
 
-<svelte:window onmousemove={handleMouseMove} onmouseup={stopDrag} />
+<svelte:window
+	onmousemove={handleMouseMove}
+	onmouseup={stopDrag}
+	ontouchmove={handleMouseMove}
+	ontouchend={stopDrag}
+/>
 
 <div class="flex h-full flex-col">
 
@@ -222,7 +239,7 @@
 				/>
 
 				<!-- Corner vertices (draggable) -->
-				{#each ["tl", "tr", "bl", "br"] as vertex}
+				{#each ["tl", "tr", "bl", "br"] as vertex (vertex)}
 					{@const pos = getVertexPosition(
 						vertex as "tl" | "tr" | "bl" | "br",
 					)}
@@ -234,7 +251,11 @@
 						stroke="var(--color-blue)"
 						stroke-width="2"
 						class="pointer-events-auto cursor-grab"
+						role="button"
+						tabindex="0"
+						aria-label="Drag to adjust {vertex === 'tl' ? 'top-left' : vertex === 'tr' ? 'top-right' : vertex === 'bl' ? 'bottom-left' : 'bottom-right'} corner"
 						onmousedown={(e) => startDrag(vertex as "tl" | "tr" | "bl" | "br", e)}
+						ontouchstart={(e) => startDrag(vertex as "tl" | "tr" | "bl" | "br", e)}
 					/>
 				{/each}
 			</svg>

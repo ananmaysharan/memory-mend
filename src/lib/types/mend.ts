@@ -53,6 +53,7 @@ export interface Mend {
 	name?: string; // Optional user-given name
 	garmentType?: string; // Type of clothing being mended
 	material?: string; // Fabric/material type
+	fabricConstruction?: string; // Fabric construction type (knit, woven, etc.)
 	image: string; // Base64 encoded repair image
 	memory: Memory;
 	pattern: PatternData;
@@ -70,6 +71,7 @@ export interface MendWorkflowState {
 	step: 'capture' | 'memory' | 'pattern' | 'preview';
 	garmentType: string | null;
 	material: string | null;
+	fabricConstruction: string | null;
 	image: string | null;
 	memory: Memory | null;
 	pattern: PatternData | null;
