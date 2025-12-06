@@ -90,15 +90,3 @@ export function extractDiagonalLines(
 
 	return lines;
 }
-
-/**
- * Get corner cells for a given grid size
- */
-export function getCornerCells(gridSize: number): Set<string> {
-	return new Set([
-		'0,0',
-		`0,${gridSize - 1}`,
-		`${gridSize - 1},0`,
-		`${gridSize - 1},${gridSize - 1}`
-	]);
-}

@@ -53,16 +53,3 @@
 		{/if}
 	</div>
 </div>
-
-<style>
-	.single-image {
-		aspect-ratio: 1;
-		overflow: hidden;
-	}
-
-	.single-image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-</style>

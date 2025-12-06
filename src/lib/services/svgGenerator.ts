@@ -5,7 +5,7 @@
 
 import type { PatternData } from '$lib/types/mend';
 import { extractDiagonalLines } from '$lib/utils/diagonalOptimizer';
-
+1
 /**
  * Generate SVG string from pattern data
  * @param pattern - Pattern data to convert

@@ -6,7 +6,6 @@
 	 */
 
 	import type { Detection } from "$lib/types/mend";
-	import BackButton from "../navigation/BackButton.svelte";
 	import Button from "../ui/Button.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
 	import Trash from "phosphor-svelte/lib/Trash";

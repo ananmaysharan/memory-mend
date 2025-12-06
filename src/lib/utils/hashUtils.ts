@@ -73,28 +73,6 @@ export function idToBinary(id: string): string {
 }
 
 /**
- * Convert binary string back to ID string
- * Each 7 bits is converted back to a character by adding the leading 0 for ASCII
- * Only processes the first ID_LENGTH chunks to avoid garbage characters from extra bits
- */
-export function binaryToId(binary: string): string {
-	const chunks: string[] = [];
-	// Only process ID_LENGTH chunks (6 chunks = 42 bits), ignore any extra bits
-	const maxChunks = ID_LENGTH;
-
-	for (let i = 0; i < Math.min(binary.length, maxChunks * 7); i += 7) {
-		chunks.push(binary.substring(i, i + 7));
-	}
-
-	return chunks.map(chunk => {
-		const paddedChunk = chunk.padEnd(7, '0');
-		// Add leading 0 to make it 8-bit for ASCII conversion
-		const asciiCode = parseInt('0' + paddedChunk, 2);
-		return String.fromCharCode(asciiCode);
-	}).join('');
-}
-
-/**
  * Calculate required grid size for a given ID length
  * Grid needs 4 corner cells + data cells for binary representation
  * Each ID character = 7 bits (base36 chars are ASCII 48-90, always < 128)
@@ -167,15 +145,4 @@ export function gridToBinary(grid: boolean[][]): string {
 	}
 
 	return binary;
-}
-
-/**
- * Get corner marker type for a given corner position
- */
-export function getCornerMarker(row: number, col: number, gridSize: number): 'TL' | 'TR' | 'BL' | 'BR' | null {
-	if (row === 0 && col === 0) return 'TL'; // Top-left: X pattern
-	if (row === 0 && col === gridSize - 1) return 'TR'; // Top-right: || pattern
-	if (row === gridSize - 1 && col === 0) return 'BL'; // Bottom-left: O pattern
-	if (row === gridSize - 1 && col === gridSize - 1) return 'BR'; // Bottom-right: solid square
-	return null;
 }

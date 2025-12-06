@@ -13,6 +13,9 @@
 	// Privacy control
 	let sharePublicly = $state(true);
 
+	// Prevent duplicate saves
+	let isSaving = $state(false);
+
 	const memoryDate = $derived(
 		mendStore.memory?.timestamp
 			? new Date(mendStore.memory.timestamp).toLocaleDateString('en-US', {
@@ -40,6 +43,10 @@
 	}
 
 	async function handleSaveAndFinish() {
+		// Prevent duplicate saves
+		if (isSaving) return;
+		isSaving = true;
+
 		try {
 			const partialMend = mendStore.getMend();
 
@@ -66,6 +73,7 @@
 			goto('/');
 		} catch (error) {
 			console.error('Failed to save mend:', error);
+			isSaving = false; // Re-enable button on error
 
 			// Show user-friendly error message
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -131,7 +139,9 @@
 		<div class="flex gap-2.5 flex-col">
 			<Button onclick={handleDownloadSVG}>Download Pattern</Button>
 			<Button onclick={handleSendToPi}>Send to Machine</Button>
-			<Button onclick={handleSaveAndFinish}>Save & Finish</Button>
+			<Button onclick={handleSaveAndFinish} disabled={isSaving}>
+				{isSaving ? 'Saving...' : 'Save & Finish'}
+			</Button>
 		</div>
 	</div>
 </div>

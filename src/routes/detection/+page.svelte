@@ -74,11 +74,6 @@
 		// Detection is optional - user can proceed even without a box
 		await goto('/memory');
 	}
-
-	// Go back to capture page
-	async function goBack() {
-		await goto('/capture');
-	}
 </script>
 
 <div class="page">
@@ -98,10 +93,6 @@
 		{#if error}
 			<div class="mt-4 rounded border-2 border-yellow-500 bg-yellow-50 p-4">
 				<p class="font-medium mb-0 text-yellow-800">⚠️ Detection API inaccessible</p>
-				<!-- <p class="mt-1 text-sm text-yellow-700">{error}</p> -->
-				<!-- <p class="mt-2 mb-0 text-sm text-yellow-700">
-					You can still add a detection box manually or proceed without one.
-				</p> -->
 			</div>
 		{/if}
 
