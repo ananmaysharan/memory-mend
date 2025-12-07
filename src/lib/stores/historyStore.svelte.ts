@@ -53,6 +53,9 @@ class HistoryStore {
 		const completeMend: Mend = {
 			id: mend.id || `mend-${now}`,
 			name: mend.name,
+			garmentType: mend.garmentType,
+			material: mend.material,
+			fabricConstruction: mend.fabricConstruction,
 			image: mend.image || '',
 			memory: mend.memory || { id: '', timestamp: now },
 			pattern: mend.pattern || {
@@ -60,11 +63,12 @@ class HistoryStore {
 				id: '',
 				config: { gridSize: 8, cellSize: 20 }
 			},
-			gcode: mend.gcode,
 			detection: mend.detection,
 			createdAt: mend.createdAt || now,
 			updatedAt: now,
-			status: mend.status || 'draft'
+			status: mend.status || 'draft',
+			isPublic: mend.isPublic,
+			source: mend.source
 		};
 
 		try {

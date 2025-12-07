@@ -11,6 +11,20 @@
 	const mend = $derived(historyStore.getMendById(mendId));
 	const from = $derived($page.url.searchParams.get('from'));
 
+	// Helper to detect if a mend is scanned from global database
+	const isScanned = $derived.by(() => {
+		if (!mend) return false;
+
+		// Explicit source field (for newly scanned mends)
+		if (mend.source === 'scanned') return true;
+
+		// Heuristic for old scanned mends: no image and isPublic flag
+		// Supabase doesn't store garment images, so empty image + isPublic = scanned
+		if (mend.isPublic && (!mend.image || mend.image === '')) return true;
+
+		return false;
+	});
+
 	const memoryDate = $derived(
 		mend?.memory.timestamp
 			? new Date(mend.memory.timestamp).toLocaleDateString('en-US', {
@@ -90,14 +104,20 @@
 			</div>
 
 			<!-- Repair Area -->
-			<div class="mb-6">
-				<h2 class="text-2xl font-semibold mb-4 font-cooper">Repair Area</h2>
-				<img src={mend.image} alt="Repair area" class="w-full rounded-lg" />
-			</div>
+			{#if !isScanned && mend.image}
+				<div class="mb-6">
+					<h2 class="text-2xl font-semibold mb-4 font-cooper">Repair Area</h2>
+					<img src={mend.image} alt="Repair area" class="w-full rounded-lg" />
+				</div>
+			{/if}
 
-			<!-- Delete Button -->
+			<!-- Action Button -->
 			<div class="flex flex-col gap-2.5">
-				<Button onclick={handleDelete}>Delete Mend</Button>
+				{#if isScanned}
+					<Button onclick={() => goto('/')}>Back to Home</Button>
+				{:else}
+					<Button onclick={handleDelete}>Delete Mend</Button>
+				{/if}
 			</div>
 		</div>
 	</div>

@@ -28,7 +28,7 @@
 		}
 
 		capturedImage = scanStore.scannedImage;
-		scanStore.clearScannedImage();
+		// Don't clear scanStore yet - keep image for potential manual decode fallback
 
 		// Start pattern detection
 		try {
@@ -55,17 +55,38 @@
 			// Always decode the pattern (even if confidence is low)
 			decodePattern();
 
+			// Check if pattern was fully decoded (no asterisks)
+			if (patternId.includes('*')) {
+				// Incomplete decoding - navigate to manual decode
+				scanStore.setDetectionError(
+					'Could not decode complete pattern. Please manually fill the grid.'
+				);
+				goto('/scan/manual');
+				return;
+			}
+
 			// Check confidence AFTER decoding
 			if (result.confidence < 0.6) {
-				error = 'Pattern detection had low confidence. The decoded ID may be inaccurate.';
+				// Low confidence - navigate to manual decode
+				scanStore.setDetectionError(
+					`Low confidence (${(result.confidence * 100).toFixed(0)}%). Please verify the pattern.`
+				);
+				goto('/scan/manual');
+				return;
 			}
 
 			// Look up the mend
 			await lookupMend();
 		} catch (err) {
 			console.error('Pattern detection error:', err);
-			error = 'Failed to detect pattern. Please try again.';
-			isScanning = false;
+
+			// Set error message and navigate to manual decode
+			scanStore.setDetectionError(
+				err instanceof TypeError
+					? 'Cannot reach detection service. Please check your connection.'
+					: 'Pattern detection failed. Please manually fill the grid.'
+			);
+			goto('/scan/manual');
 		}
 	});
 
@@ -155,6 +176,8 @@
 
 	function handleViewMend() {
 		if (foundMend) {
+			// Clear scanStore on successful detection
+			scanStore.clearScannedImage();
 			goto(`/history/${foundMend.id}`);
 		}
 	}

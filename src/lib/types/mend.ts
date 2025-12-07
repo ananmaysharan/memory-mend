@@ -62,6 +62,7 @@ export interface Mend {
 	updatedAt: number;
 	status: 'draft' | 'ready' | 'sent' | 'completed';
 	isPublic?: boolean; // Privacy flag for Supabase sharing (default: true)
+	source?: 'local' | 'scanned'; // Where this mend came from (default: 'local')
 }
 
 /**

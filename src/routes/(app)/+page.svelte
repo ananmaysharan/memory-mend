@@ -9,7 +9,19 @@
 	import PlusCircle from "phosphor-svelte/lib/PlusCircle";
 	import BookOpen from "phosphor-svelte/lib/BookOpen";
 
-	const mends = $derived(historyStore.getSortedMends());
+	// Helper to detect if a mend is scanned from global database
+	function isScannedMend(mend: typeof historyStore.mends[0]): boolean {
+		// Explicit source field (for newly scanned mends)
+		if (mend.source === 'scanned') return true;
+
+		// Heuristic for old scanned mends: no image and isPublic flag
+		// Supabase doesn't store garment images, so empty image + isPublic = scanned
+		if (mend.isPublic && (!mend.image || mend.image === '')) return true;
+
+		return false;
+	}
+
+	const mends = $derived(historyStore.getSortedMends().filter(m => !isScannedMend(m)));
 
 	function startNewMend() {
 		mendStore.reset();

@@ -151,7 +151,8 @@ export async function findMendByPatternId(patternId: string): Promise<Mend | nul
 			status: 'ready',
 			createdAt: data.created_at,
 			updatedAt: data.updated_at,
-			isPublic: true // If it's in Supabase, it's public
+			isPublic: true, // If it's in Supabase, it's public
+			source: 'scanned' // Mark as scanned from global database
 		};
 
 		return mend;

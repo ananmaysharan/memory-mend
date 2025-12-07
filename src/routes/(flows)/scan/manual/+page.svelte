@@ -4,10 +4,12 @@
 	 */
 
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import TopBar from '$lib/components/navigation/TopBar.svelte';
 	import ManualPatternInput from '$lib/components/scan/ManualPatternInput.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { historyStore } from '$lib/stores/historyStore.svelte';
+	import { scanStore } from '$lib/stores/scanStore.svelte';
 	import { gridToBinary } from '$lib/utils/hashUtils';
 	import { findMendByPatternId as findInSupabase } from '$lib/services/supabase';
 
@@ -15,6 +17,20 @@
 	let grid = $state<boolean[][]>([]);
 	let error = $state<string | null>(null);
 	let patternId = $state<string>('******');
+	let scannedImage = $state<string | null>(null);
+	let detectionError = $state<string | null>(null);
+
+	onMount(() => {
+		// Manual decode ONLY accessible via failed detection with image
+		if (!scanStore.scannedImage) {
+			goto('/scan'); // Redirect if no image (direct navigation blocked)
+			return;
+		}
+
+		scannedImage = scanStore.scannedImage;
+		detectionError = scanStore.detectionError;
+		scanStore.clearScannedImage(); // Clear after reading
+	});
 
 	function handleGridComplete(completedGrid: boolean[][]) {
 		grid = completedGrid;
@@ -98,25 +114,42 @@
 </script>
 
 <div class="page">
-	<TopBar title="Manual Decode" showBackButton={true} backDestination="/scan" />
+	<TopBar title="Decode" showBackButton={true} backDestination="/scan" />
 
 	<div class="page-content">
-		<!-- <h2 class="mb-4">Unlock Memory</h2> -->
+		<!-- Detection Error Banner -->
+		{#if detectionError}
+			<div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+				<p class="text-yellow-800 font-medium mb-1">⚠️ Automatic Detection Failed</p>
+				<p class="text-gray-600 text-sm">{detectionError}</p>
+			</div>
+		{/if}
+
+		<!-- Instructions -->
 		<p class="text-gray-600 mb-6">
-			Fill out the mend pattern below to unlock the memory.
+			The pattern is shown behind the grid. Fill in the cells to match.
 		</p>
 
-		<!-- Manual Pattern Input -->
-		<ManualPatternInput onComplete={handleGridComplete} />
+		<!-- Manual Pattern Input with Background Image -->
+		<div class="relative w-full max-w-md mx-auto flex justify-center mb-6">
+			<img
+				src={scannedImage}
+				alt="Captured pattern"
+				class="absolute inset-0 w-full h-full object-contain pointer-events-none"
+				style="opacity: 0.3; z-index: 0;"
+			/>
 
-		<!-- Pattern ID Display (always visible) -->
-		<div class="mt-6">
-			<div class="bg-white border border-border rounded-lg py-4 flex flex-col items-center">
-				<p class="text-s mb-2 font-mono text-gray-400 uppercase tracking-wide">Decoded Pattern ID</p>
-				<p class="text-3xl mb-0 font-fig text-black tracking-widest text-center">
-					{patternId}
-				</p>
+			<div class="relative" style="z-index: 1;">
+				<ManualPatternInput onComplete={handleGridComplete} />
 			</div>
+		</div>
+
+		<!-- Pattern ID Display -->
+		<div class="mt-6 bg-white border border-border rounded-lg py-4 flex flex-col items-center">
+			<p class="text-s mb-2 font-mono text-gray-400 uppercase tracking-wide">Decoded Pattern ID</p>
+			<p class="text-3xl mb-0 font-fig text-black tracking-widest text-center">
+				{patternId}
+			</p>
 		</div>
 
 		<!-- Error Message -->

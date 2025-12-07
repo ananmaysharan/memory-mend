@@ -8,6 +8,7 @@
 
 class ScanStore {
 	scannedImage = $state<string | null>(null);
+	detectionError = $state<string | null>(null);
 
 	/**
 	 * Set the scanned image to be analyzed
@@ -17,10 +18,25 @@ class ScanStore {
 	}
 
 	/**
-	 * Clear the scanned image after it's been processed
+	 * Set detection error message for display on manual decode page
+	 */
+	setDetectionError(error: string) {
+		this.detectionError = error;
+	}
+
+	/**
+	 * Clear detection error message
+	 */
+	clearDetectionError() {
+		this.detectionError = null;
+	}
+
+	/**
+	 * Clear the scanned image and error after they've been processed
 	 */
 	clearScannedImage() {
 		this.scannedImage = null;
+		this.detectionError = null;
 	}
 }
 

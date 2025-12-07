@@ -9,7 +9,6 @@
 	import { blobToBase64 } from '$lib/utils/imageUtils';
 	import { scanStore } from '$lib/stores/scanStore.svelte';
 	import UploadSimple from 'phosphor-svelte/lib/UploadSimple';
-	import PencilSimple from 'phosphor-svelte/lib/PencilSimple';
 
 	let fileInputElement: HTMLInputElement | null = $state(null);
 
@@ -17,10 +16,6 @@
 		// Store image in scan store and navigate to analyzing page
 		scanStore.setScannedImage(imageData);
 		goto('/scan/analyzing');
-	}
-
-	function handleManualDecode() {
-		goto('/scan/manual');
 	}
 
 	function handleUploadClick() {
@@ -51,23 +46,16 @@
 
 		<!-- Camera Capture -->
 		<div class="mb-6 flex flex-col gap-2.5">
-			<CameraCapture onCapture={handleCameraCapture} />
+			<CameraCapture onCapture={handleCameraCapture} showGridOverlay={true} />
 		</div>
 
-		<!-- Alternative options -->
+		<!-- Alternative option -->
 		<div class="flex flex-col gap-2.5">
 			<button
 				onclick={handleUploadClick}
 			>
 				<UploadSimple size={18} weight="bold" />
 				Upload Image
-			</button>
-			<p class="text-center italic">or...</p>
-			<button
-				onclick={handleManualDecode}
-			>
-				<PencilSimple size={18} weight="bold" />
-				Decode Manually
 			</button>
 		</div>
 

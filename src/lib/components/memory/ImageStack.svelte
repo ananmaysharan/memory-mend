@@ -7,7 +7,7 @@
 	let { images, maxVisible = 3 }: Props = $props();
 
 	// Predefined angles for realistic stack effect
-	const angles = [-8, -4, -2, 0, 2, 4, 6, 8];
+	const angles = [-6, -4, -2, 0, 2, 4, 6];
 
 	// Get visible images with their rotation angles
 	const stackedImages = $derived(() => {
