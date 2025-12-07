@@ -131,16 +131,18 @@
 		</p>
 
 		<!-- Manual Pattern Input with Background Image -->
-		<div class="relative w-full max-w-md mx-auto flex justify-center mb-6">
+		<div class="relative w-full max-w-md mx-auto overflow-hidden rounded bg-surface mb-6" style="aspect-ratio: 3/4;">
 			<img
 				src={scannedImage}
 				alt="Captured pattern"
-				class="absolute inset-0 w-full h-full object-contain pointer-events-none"
-				style="opacity: 0.3; z-index: 0;"
+				class="w-full h-full object-cover"
 			/>
-
-			<div class="relative" style="z-index: 1;">
-				<ManualPatternInput onComplete={handleGridComplete} />
+			
+			<!-- Grid overlay with flex centering (matches camera positioning) -->
+			<div class="absolute inset-0 flex items-center justify-center pointer-events-none" style="opacity: 0.3;">
+				<div class="pointer-events-auto">
+					<ManualPatternInput onComplete={handleGridComplete} />
+				</div>
 			</div>
 		</div>
 
