@@ -7,9 +7,10 @@
 
 	interface Props {
 		onComplete: (grid: boolean[][]) => void;
+		strokeColor?: string;
 	}
 
-	let { onComplete }: Props = $props();
+	let { onComplete, strokeColor = '#000' }: Props = $props();
 
 	const GRID_SIZE = 7;
 	const CELL_SIZE = 28; // Match PatternEditor large size
@@ -46,7 +47,7 @@
 						y1={CELL_SIZE * 0.1}
 						x2={CELL_SIZE * 0.9}
 						y2={CELL_SIZE * 0.9}
-						stroke="#000"
+						stroke={strokeColor}
 						stroke-width={CELL_SIZE * 0.12}
 						stroke-linecap="butt"
 					/>
@@ -55,7 +56,7 @@
 						y1={CELL_SIZE * 0.1}
 						x2={CELL_SIZE * 0.1}
 						y2={CELL_SIZE * 0.9}
-						stroke="#000"
+						stroke={strokeColor}
 						stroke-width={CELL_SIZE * 0.12}
 						stroke-linecap="butt"
 					/>
@@ -72,7 +73,7 @@
 						y1={CELL_SIZE * 0.1}
 						x2={CELL_SIZE * 0.35}
 						y2={CELL_SIZE * 0.9}
-						stroke="#000"
+						stroke={strokeColor}
 						stroke-width={CELL_SIZE * 0.12}
 						stroke-linecap="butt"
 					/>
@@ -81,7 +82,7 @@
 						y1={CELL_SIZE * 0.1}
 						x2={CELL_SIZE * 0.65}
 						y2={CELL_SIZE * 0.9}
-						stroke="#000"
+						stroke={strokeColor}
 						stroke-width={CELL_SIZE * 0.12}
 						stroke-linecap="butt"
 					/>
@@ -95,8 +96,8 @@
 				<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"></div>
 				{#each row as cell, colIndex}
 					<div
-						class="border border-gray-300 box-border cursor-pointer hover:bg-gray-50 transition-colors"
-						style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"
+						class="border box-border cursor-pointer hover:bg-gray-50 transition-colors"
+						style="border-color: {strokeColor}; width: {CELL_SIZE}px; height: {CELL_SIZE}px;"
 						onclick={() => toggleCell(rowIndex, colIndex)}
 						role="button"
 						tabindex="0"
@@ -114,7 +115,7 @@
 									y1={0}
 									x2={CELL_SIZE}
 									y2={CELL_SIZE}
-									stroke="#000"
+									stroke={strokeColor}
 									stroke-width={CELL_SIZE * 0.12}
 									stroke-linecap="butt"
 								/>
@@ -123,7 +124,7 @@
 									y1={0}
 									x2={0}
 									y2={CELL_SIZE}
-									stroke="#000"
+									stroke={strokeColor}
 									stroke-width={CELL_SIZE * 0.12}
 									stroke-linecap="butt"
 								/>
@@ -139,13 +140,13 @@
 		<div class="flex">
 			<!-- BL Fiducial: O -->
 			<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;">
-				<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
-					<circle
-						cx={CELL_SIZE / 2}
-						cy={CELL_SIZE / 2}
-						r={(CELL_SIZE - CELL_SIZE * 0.24) / 2}
-						fill="none"
-						stroke="#000"
+			<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
+				<circle
+					cx={CELL_SIZE / 2}
+					cy={CELL_SIZE / 2}
+					r={(CELL_SIZE - CELL_SIZE * 0.24) / 2}
+					fill="none"
+					stroke={strokeColor}
 						stroke-width={CELL_SIZE * 0.12}
 					/>
 				</svg>
@@ -155,14 +156,14 @@
 			{/each}
 			<!-- BR Fiducial: ■ -->
 			<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;">
-				<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
-					<rect
-						x={CELL_SIZE * 0.1}
-						y={CELL_SIZE * 0.1}
-						width={CELL_SIZE * 0.8}
-						height={CELL_SIZE * 0.8}
-						fill="none"
-						stroke="#000"
+			<svg width={CELL_SIZE} height={CELL_SIZE} xmlns="http://www.w3.org/2000/svg">
+				<rect
+					x={CELL_SIZE * 0.1}
+					y={CELL_SIZE * 0.1}
+					width={CELL_SIZE * 0.8}
+					height={CELL_SIZE * 0.8}
+					fill="none"
+					stroke={strokeColor}
 						stroke-width={CELL_SIZE * 0.12}
 					/>
 				</svg>
@@ -182,7 +183,7 @@
 				y1={CELL_SIZE * 0.5}
 				x2={8 * CELL_SIZE + CELL_SIZE * 0.35 - gap}
 				y2={CELL_SIZE * 0.5}
-				stroke="#000"
+				stroke={strokeColor}
 				stroke-width={CELL_SIZE * 0.12}
 				stroke-linecap="butt"
 			/>
@@ -192,7 +193,7 @@
 				y1={CELL_SIZE * 0.9 + gap}
 				x2={8 * CELL_SIZE + CELL_SIZE * 0.5}
 				y2={8 * CELL_SIZE + CELL_SIZE * 0.1 - gap}
-				stroke="#000"
+				stroke={strokeColor}
 				stroke-width={CELL_SIZE * 0.12}
 				stroke-linecap="butt"
 			/>
@@ -202,7 +203,7 @@
 				y1={8 * CELL_SIZE + CELL_SIZE * 0.5}
 				x2={8 * CELL_SIZE + CELL_SIZE * 0.1 - gap}
 				y2={8 * CELL_SIZE + CELL_SIZE * 0.5}
-				stroke="#000"
+				stroke={strokeColor}
 				stroke-width={CELL_SIZE * 0.12}
 				stroke-linecap="butt"
 			/>
@@ -212,7 +213,7 @@
 				y1={CELL_SIZE * 0.9 + gap}
 				x2={CELL_SIZE * 0.5}
 				y2={8 * CELL_SIZE + CELL_SIZE * 0.12 - gap}
-				stroke="#000"
+				stroke={strokeColor}
 				stroke-width={CELL_SIZE * 0.12}
 				stroke-linecap="butt"
 			/>

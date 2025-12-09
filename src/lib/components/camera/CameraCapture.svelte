@@ -79,7 +79,7 @@
 			// Check if torch is supported
 			if ('torch' in capabilities && capabilities.torch) {
 				await videoTrack.applyConstraints({
-					advanced: [{ torch: true }]
+					advanced: [{ torch: true } as any]
 				});
 				torchSupported = true;
 				torchEnabled = true;
@@ -193,7 +193,7 @@
 		</div>
 	{:else if capturedImage}
 		<div class="flex flex-col h-full w-full">
-			<div class="flex-1 flex items-center justify-center p-4">
+			<div class="flex-1 flex items-center justify-center">
 				<div class="relative w-full max-w-md" style="aspect-ratio: 3/4;">
 					<img
 						src={capturedImage}

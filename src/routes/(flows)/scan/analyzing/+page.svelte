@@ -193,7 +193,7 @@
 				<img
 					src={capturedImage}
 					alt="Captured pattern"
-					class="w-full h-full object-contain"
+					class="w-full h-full object-cover"
 				/>
 				{#if isScanning}
 					<div class="scanning-bar"></div>

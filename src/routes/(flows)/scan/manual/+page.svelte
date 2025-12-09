@@ -19,6 +19,48 @@
 	let patternId = $state<string>('******');
 	let scannedImage = $state<string | null>(null);
 	let detectionError = $state<string | null>(null);
+	let gridStrokeColor = $state<string>('#000');
+
+	// Detect if image is dark or light and set appropriate grid color
+	function detectImageBrightness(imageData: string) {
+		const img = new Image();
+		img.onload = () => {
+			const canvas = document.createElement('canvas');
+			const ctx = canvas.getContext('2d');
+			if (!ctx) return;
+
+			// Sample a smaller version for performance
+			canvas.width = 100;
+			canvas.height = 100;
+			ctx.drawImage(img, 0, 0, 100, 100);
+
+			try {
+				const imageData = ctx.getImageData(0, 0, 100, 100);
+				const data = imageData.data;
+				let totalBrightness = 0;
+
+				// Calculate average brightness
+				for (let i = 0; i < data.length; i += 4) {
+					const r = data[i];
+					const g = data[i + 1];
+					const b = data[i + 2];
+					// Use perceived brightness formula
+					const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+					totalBrightness += brightness;
+				}
+
+				const avgBrightness = totalBrightness / (data.length / 4);
+
+				// Use white for dark images (< 128), black for light images
+				gridStrokeColor = avgBrightness < 128 ? '#fff' : '#000';
+			} catch (err) {
+				console.error('Error analyzing image brightness:', err);
+				// Default to black if analysis fails
+				gridStrokeColor = '#000';
+			}
+		};
+		img.src = imageData;
+	}
 
 	onMount(() => {
 		// Manual decode ONLY accessible via failed detection with image
@@ -29,6 +71,7 @@
 
 		scannedImage = scanStore.scannedImage;
 		detectionError = scanStore.detectionError;
+		detectImageBrightness(scannedImage);
 		scanStore.clearScannedImage(); // Clear after reading
 	});
 
@@ -118,17 +161,14 @@
 
 	<div class="page-content">
 		<!-- Detection Error Banner -->
-		{#if detectionError}
+		<!-- {#if detectionError}
 			<div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
 				<p class="text-yellow-800 font-medium mb-1">⚠️ Automatic Detection Failed</p>
 				<p class="text-gray-600 text-sm">{detectionError}</p>
 			</div>
-		{/if}
+		{/if} -->
 
-		<!-- Instructions -->
-		<p class="text-gray-600 mb-6">
-			The pattern is shown behind the grid. Fill in the cells to match.
-		</p>
+
 
 		<!-- Manual Pattern Input with Background Image -->
 		<div class="relative w-full max-w-md mx-auto overflow-hidden rounded bg-surface mb-6" style="aspect-ratio: 3/4;">
@@ -136,15 +176,20 @@
 				src={scannedImage}
 				alt="Captured pattern"
 				class="w-full h-full object-cover"
+				style="opacity: 0.3;"
 			/>
 			
 			<!-- Grid overlay with flex centering (matches camera positioning) -->
-			<div class="absolute inset-0 flex items-center justify-center pointer-events-none" style="opacity: 0.3;">
+			<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
 				<div class="pointer-events-auto">
-					<ManualPatternInput onComplete={handleGridComplete} />
+					<ManualPatternInput onComplete={handleGridComplete} strokeColor={gridStrokeColor} />
 				</div>
 			</div>
 		</div>
+				<!-- Instructions -->
+		<p class="text-gray-600 mb-6">
+			The pattern is shown behind the grid. Fill in the cells to match.
+		</p>
 
 		<!-- Pattern ID Display -->
 		<div class="mt-6 bg-white border border-border rounded-lg py-4 flex flex-col items-center">
@@ -154,10 +199,10 @@
 			</p>
 		</div>
 
-		<!-- Error Message -->
+		<!-- Error Message
 		{#if error}
 			<p class="mt-4 text-red-800 text-sm text-center">{error}</p>
-		{/if}
+		{/if} -->
 
 		<!-- Unlock Button (always visible) -->
 		<div class="mt-6">

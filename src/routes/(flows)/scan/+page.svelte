@@ -50,14 +50,14 @@
 		</div>
 
 		<!-- Alternative option -->
-		<div class="flex flex-col gap-2.5">
+		<!-- <div class="flex flex-col gap-2.5">
 			<button
 				onclick={handleUploadClick}
 			>
 				<UploadSimple size={18} weight="bold" />
 				Upload Image
 			</button>
-		</div>
+		</div> -->
 
 		<!-- Hidden file input -->
 		<input
