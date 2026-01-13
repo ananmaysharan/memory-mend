@@ -11,11 +11,9 @@
 	let { title, showBackButton = false, backDestination, backHandler }: Props = $props();
 </script>
 
-<div class="relative flex items-center justify-center p-4 border-b border-border">
+<div class="flex items-center gap-2 p-4 border-b border-border">
 	{#if showBackButton}
-		<div class="absolute left-4">
-			<BackButton destination={backDestination} onclick={backHandler} />
-		</div>
+		<BackButton destination={backDestination} onclick={backHandler} />
 	{/if}
-	<h1 class="text-center my-0">{title}</h1>
+	<h1 class="my-0 font-medium leading-none flex items-center">{title}</h1>
 </div>

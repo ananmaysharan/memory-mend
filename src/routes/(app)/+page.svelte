@@ -29,7 +29,10 @@
 	}
 
 	function formatDate(timestamp: number): string {
-		return new Date(timestamp).toLocaleDateString();
+		return new Date(timestamp).toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric'
+		});
 	}
 </script>
 
@@ -41,7 +44,7 @@
 			<Button onclick={() => goto('/scan')}><Scan size={18} weight="bold" />Scan Mend</Button>
 		</div>
 
-		<h2 class='my-5'> Your Memory Mends </h2>
+		<h2 class='my-5'>Recent Memory Mends</h2>
 
 		{#if mends.length <= 0}
 			<p>Start or scan a mend to add to your library.</p>
@@ -51,7 +54,7 @@
 			<div class="grid grid-cols-2 md:grid-cols-3 gap-5">
 				{#each mends.slice(0, 6) as mend (mend.id)}
 					<div
-						class="flex flex-col gap-2 cursor-pointer"
+						class="flex flex-col items-start gap-2 cursor-pointer text-left"
 						onclick={() => goto(`/history/${mend.id}?from=home`)}
 						role="button"
 						tabindex="0"
@@ -72,7 +75,7 @@
 							{mend.memory.title || 'Untitled Memory'}
 						</h3>
 
-						<p class='text-xs text-gray-500 mb-0'>{formatDate(mend.createdAt)}</p>
+						<p class="text-xs text-gray-500 mb-0 uppercase font-mono">{formatDate(mend.createdAt)}</p>
 					</div>
 				{/each}
 			</div>
