@@ -21,7 +21,7 @@
 </script>
 
 <button
-	class="py-2 px-4 bg-transparent border border-border text-[#333] cursor-pointer text-sm w-auto normal-case shadow-none font-cooper hover:bg-off-white"
+	class="pb-2 pt-3 px-4 bg-transparent text-[#333] cursor-pointer text-sm w-auto normal-case shadow-none border-none font-cooper hover:text-black"
 	onclick={handleClick}
 >
 	<ArrowLeft size={18} weight="bold" />

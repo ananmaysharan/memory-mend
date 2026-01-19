@@ -96,8 +96,8 @@
 				<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"></div>
 				{#each row as cell, colIndex}
 					<div
-						class="border box-border cursor-pointer hover:bg-gray-50 transition-colors"
-						style="border-color: {strokeColor}; width: {CELL_SIZE}px; height: {CELL_SIZE}px;"
+						class="box-border cursor-pointer hover:bg-gray-50/20 transition-colors"
+						style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"
 						onclick={() => toggleCell(rowIndex, colIndex)}
 						role="button"
 						tabindex="0"
@@ -170,7 +170,7 @@
 			</div>
 		</div>
 
-		<!-- Border lines connecting fiducials (matching PatternEditor) -->
+		<!-- Border lines connecting fiducials and 7x7 grid -->
 		<svg
 			class="absolute top-0 left-0 pointer-events-none"
 			width={(GRID_SIZE + 2) * CELL_SIZE}
@@ -217,6 +217,30 @@
 				stroke-width={CELL_SIZE * 0.12}
 				stroke-linecap="butt"
 			/>
+			<!-- 7x7 Grid: 8 horizontal lines (top to bottom edges) -->
+			{#each Array(GRID_SIZE + 1) as _, i}
+				<line
+					x1={CELL_SIZE}
+					y1={CELL_SIZE + i * CELL_SIZE}
+					x2={CELL_SIZE * (GRID_SIZE + 1)}
+					y2={CELL_SIZE + i * CELL_SIZE}
+					stroke={strokeColor}
+					stroke-width={CELL_SIZE * 0.12}
+					stroke-linecap="butt"
+				/>
+			{/each}
+			<!-- 7x7 Grid: 8 vertical lines (left to right edges) -->
+			{#each Array(GRID_SIZE + 1) as _, i}
+				<line
+					x1={CELL_SIZE + i * CELL_SIZE}
+					y1={CELL_SIZE}
+					x2={CELL_SIZE + i * CELL_SIZE}
+					y2={CELL_SIZE * (GRID_SIZE + 1)}
+					stroke={strokeColor}
+					stroke-width={CELL_SIZE * 0.12}
+					stroke-linecap="butt"
+				/>
+			{/each}
 		</svg>
 	</div>
 </div>

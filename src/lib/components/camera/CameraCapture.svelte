@@ -19,8 +19,6 @@
 	let isStreaming = $state(false);
 	let error = $state<string | null>(null);
 	let capturedImage = $state<string | null>(null);
-	let torchSupported = $state(false);
-	let torchEnabled = $state(false);
 
 	// Grid overlay constants (matching ManualPatternInput)
 	const GRID_SIZE = 7;
@@ -45,7 +43,6 @@
 				videoElement.srcObject = mediaStream;
 				await videoElement.play();
 				isStreaming = true;
-				await enableTorch();
 			}
 		} catch (err) {
 			console.error('Error accessing camera:', err);
@@ -59,36 +56,6 @@
 			stream = null;
 		}
 		isStreaming = false;
-		torchEnabled = false;
-		torchSupported = false;
-	}
-
-	async function enableTorch() {
-		if (!stream) return;
-
-		try {
-			const videoTrack = stream.getVideoTracks()[0];
-
-			// Check if getCapabilities is supported
-			if (typeof videoTrack.getCapabilities !== 'function') {
-				return;
-			}
-
-			const capabilities = videoTrack.getCapabilities();
-
-			// Check if torch is supported
-			if ('torch' in capabilities && capabilities.torch) {
-				await videoTrack.applyConstraints({
-					advanced: [{ torch: true } as any]
-				});
-				torchSupported = true;
-				torchEnabled = true;
-			}
-		} catch (err) {
-			console.warn('Could not enable torch:', err);
-			torchSupported = false;
-			torchEnabled = false;
-		}
 	}
 
 	function capturePhoto() {
@@ -263,7 +230,7 @@
 										<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"></div>
 										{#each Array(GRID_SIZE) as _, colIndex}
 											<div
-												class="border border-white box-border"
+												class="box-border"
 												style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"
 											></div>
 										{/each}
@@ -305,7 +272,7 @@
 									</div>
 								</div>
 
-								<!-- Border lines connecting fiducials -->
+								<!-- Border lines connecting fiducials and 7x7 grid -->
 								<svg
 									class="absolute top-0 left-0 pointer-events-none"
 									width={(GRID_SIZE + 2) * CELL_SIZE}
@@ -352,6 +319,30 @@
 										stroke-width={CELL_SIZE * 0.12}
 										stroke-linecap="butt"
 									/>
+									<!-- 7x7 Grid: 8 horizontal lines (top to bottom edges) -->
+									{#each Array(GRID_SIZE + 1) as _, i}
+										<line
+											x1={CELL_SIZE}
+											y1={CELL_SIZE + i * CELL_SIZE}
+											x2={CELL_SIZE * (GRID_SIZE + 1)}
+											y2={CELL_SIZE + i * CELL_SIZE}
+											stroke="#fff"
+											stroke-width={CELL_SIZE * 0.12}
+											stroke-linecap="butt"
+										/>
+									{/each}
+									<!-- 7x7 Grid: 8 vertical lines (left to right edges) -->
+									{#each Array(GRID_SIZE + 1) as _, i}
+										<line
+											x1={CELL_SIZE + i * CELL_SIZE}
+											y1={CELL_SIZE}
+											x2={CELL_SIZE + i * CELL_SIZE}
+											y2={CELL_SIZE * (GRID_SIZE + 1)}
+											stroke="#fff"
+											stroke-width={CELL_SIZE * 0.12}
+											stroke-linecap="butt"
+										/>
+									{/each}
 								</svg>
 							</div>
 						</div>
@@ -438,7 +429,7 @@
 										<div class="box-border" style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"></div>
 										{#each Array(GRID_SIZE) as _, colIndex}
 											<div
-												class="border border-white box-border"
+												class="box-border"
 												style="width: {CELL_SIZE}px; height: {CELL_SIZE}px;"
 											></div>
 										{/each}
@@ -480,7 +471,7 @@
 									</div>
 								</div>
 
-								<!-- Border lines connecting fiducials -->
+								<!-- Border lines connecting fiducials and 7x7 grid -->
 								<svg
 									class="absolute top-0 left-0 pointer-events-none"
 									width={(GRID_SIZE + 2) * CELL_SIZE}
@@ -527,6 +518,30 @@
 										stroke-width={CELL_SIZE * 0.12}
 										stroke-linecap="butt"
 									/>
+									<!-- 7x7 Grid: 8 horizontal lines (top to bottom edges) -->
+									{#each Array(GRID_SIZE + 1) as _, i}
+										<line
+											x1={CELL_SIZE}
+											y1={CELL_SIZE + i * CELL_SIZE}
+											x2={CELL_SIZE * (GRID_SIZE + 1)}
+											y2={CELL_SIZE + i * CELL_SIZE}
+											stroke="#fff"
+											stroke-width={CELL_SIZE * 0.12}
+											stroke-linecap="butt"
+										/>
+									{/each}
+									<!-- 7x7 Grid: 8 vertical lines (left to right edges) -->
+									{#each Array(GRID_SIZE + 1) as _, i}
+										<line
+											x1={CELL_SIZE + i * CELL_SIZE}
+											y1={CELL_SIZE}
+											x2={CELL_SIZE + i * CELL_SIZE}
+											y2={CELL_SIZE * (GRID_SIZE + 1)}
+											stroke="#fff"
+											stroke-width={CELL_SIZE * 0.12}
+											stroke-linecap="butt"
+										/>
+									{/each}
 								</svg>
 							</div>
 						</div>

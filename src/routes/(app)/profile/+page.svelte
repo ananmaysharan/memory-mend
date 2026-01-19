@@ -36,15 +36,10 @@
 				<span class="font-cooper text-xl font-semibold">{mendCount}</span>
 				<span class="text-xs text-gray-500 font-mono uppercase">Mends</span>
 			</div>
-			<div class="w-px bg-border"></div>
+			<!-- <div class="w-px bg-border"></div> -->
 			<div class="flex flex-col items-center gap-1">
 				<span class="font-cooper text-xl font-semibold">5</span>
 				<span class="text-xs text-gray-500 font-mono uppercase">Friends</span>
-			</div>
-			<div class="w-px bg-border"></div>
-			<div class="flex flex-col items-center gap-1">
-				<span class="font-cooper text-xl font-semibold">Dec '25</span>
-				<span class="text-xs text-gray-500 font-mono uppercase">Joined</span>
 			</div>
 		</div>
 

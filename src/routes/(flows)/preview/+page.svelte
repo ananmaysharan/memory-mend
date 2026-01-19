@@ -33,7 +33,7 @@
 	});
 
 	async function handleSendToPi() {
-		alert('Pattern sent to machine!');
+		alert('Pattern sent to machine - make sure your machine is paired.');
 	}
 
 	function handleDownloadSVG() {

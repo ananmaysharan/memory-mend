@@ -31,7 +31,7 @@
 				class="flex flex-col items-center justify-center flex-1 pt-3 pb-2 font-mono uppercase text-xs transition-colors no-underline hover:no-underline hover:bg-off-white"
 				class:text-orange-600={isActive(tab.path)}
 				class:text-gray-600={!isActive(tab.path)}
-				style="padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));"
+				style="padding-bottom: calc(2rem + env(safe-area-inset-bottom));"
 			>
 				<svelte:component
 					this={tab.icon}

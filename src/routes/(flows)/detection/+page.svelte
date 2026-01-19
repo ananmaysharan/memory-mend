@@ -90,11 +90,11 @@
 		/>
 
 		<!-- Error message -->
-		{#if error}
+		<!-- {#if error}
 			<div class="mt-4 rounded border-2 border-yellow-500 bg-yellow-50 p-4">
 				<p class="font-medium mb-0 text-yellow-800">⚠️ Detection API inaccessible</p>
 			</div>
-		{/if}
+		{/if} -->
 
 		<!-- Action buttons -->
 		<div class="flex gap-3 p-4 bg-[--color-surface]">
